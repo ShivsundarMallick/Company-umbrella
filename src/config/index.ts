@@ -170,17 +170,25 @@ export const NAVIGATION: Record<string, NavItem[]> = {
       ]
     },
 
-    // Analytics
+    // Reports
     {
-      name: 'Analytics',
-      href: '/website/analytics',
+      name: 'Reports',
+      href: '/website/reports',
       icon: 'BarChart3',
       permission: PERMISSIONS.VIEW_ANALYTICS,
       children: [
-        { name: 'Overview', href: '/website/analytics', icon: 'PieChart', permission: PERMISSIONS.VIEW_ANALYTICS },
-        { name: 'Content', href: '/website/analytics/content', icon: 'TrendingUp', permission: PERMISSIONS.VIEW_ANALYTICS },
-        { name: 'Revenue', href: '/website/analytics/revenue', icon: 'DollarSign', permission: PERMISSIONS.VIEW_REVENUE },
-        { name: 'Users', href: '/website/analytics/users', icon: 'UserPlus', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Overview', href: '/website/reports', icon: 'PieChart', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'TDS Report', href: '/website/reports/tds', icon: 'FileText', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Company PAN Register Report', href: '/website/reports/company-pan-register', icon: 'FileCheck', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Company Document Register', href: '/website/reports/company-document-register', icon: 'FolderTree', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Pending Tax Report', href: '/website/reports/pending-tax', icon: 'Clock', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Tax Payment History', href: '/website/reports/tax-payment-history', icon: 'Receipt', permission: PERMISSIONS.VIEW_REVENUE },
+        { name: 'Compliance Status Report', href: '/website/reports/compliance-status', icon: 'ToggleLeft', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Company Registration Report', href: '/website/reports/company-registration', icon: 'FileText', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'GST Filing Report', href: '/website/reports/gst-filing', icon: 'Receipt', permission: PERMISSIONS.VIEW_REVENUE },
+        { name: 'Document Expiry Report', href: '/website/reports/document-expiry', icon: 'Clock', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'Audit Report', href: '/website/reports/audit', icon: 'FileCheck', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'User Activity Report', href: '/website/reports/user-activity', icon: 'Users', permission: PERMISSIONS.VIEW_ANALYTICS },
       ]
     },
   ],

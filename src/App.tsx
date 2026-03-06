@@ -37,11 +37,19 @@ import UsersPage from './pages/website/users/UsersPage';
 import AdminsPage from './pages/website/users/AdminsPage';
 import RolesPage from './pages/website/users/RolesPage';
 
-// Analytics
-import AnalyticsPage from './pages/website/analytics/AnalyticsPage';
-import ContentAnalyticsPage from './pages/website/analytics/ContentAnalyticsPage';
-import RevenueAnalyticsPage from './pages/website/analytics/RevenueAnalyticsPage';
-import UsersAnalyticsPage from './pages/website/analytics/UsersAnalyticsPage';
+// Reports
+import ReportsDashboardPage from './pages/website/reports/ReportsDashboardPage';
+import TdsReportPage from './pages/website/reports/TdsReportPage';
+import CompanyPanRegisterReportPage from './pages/website/reports/CompanyPanRegisterReportPage';
+import CompanyDocumentRegisterReportPage from './pages/website/reports/CompanyDocumentRegisterReportPage';
+import PendingTaxReportPage from './pages/website/reports/PendingTaxReportPage';
+import TaxPaymentHistoryReportPage from './pages/website/reports/TaxPaymentHistoryReportPage';
+import ComplianceStatusReportPage from './pages/website/reports/ComplianceStatusReportPage';
+import CompanyRegistrationReportPage from './pages/website/reports/CompanyRegistrationReportPage';
+import GstFilingReportPage from './pages/website/reports/GstFilingReportPage';
+import DocumentExpiryReportPage from './pages/website/reports/DocumentExpiryReportPage';
+import AuditReportPage from './pages/website/reports/AuditReportPage';
+import UserActivityReportPage from './pages/website/reports/UserActivityReportPage';
 
 // Payments
 import PaymentsPage from './pages/website/payments/PaymentsPage';
@@ -170,11 +178,19 @@ function App() {
                 }
               />
 
-              {/* Analytics */}
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="analytics/content" element={<ContentAnalyticsPage />} />
-              <Route path="analytics/revenue" element={<RevenueAnalyticsPage />} />
-              <Route path="analytics/users" element={<UsersAnalyticsPage />} />
+              {/* Reports */}
+              <Route path="reports" element={<ReportsDashboardPage />} />
+              <Route path="reports/tds" element={<TdsReportPage />} />
+              <Route path="reports/company-pan-register" element={<CompanyPanRegisterReportPage />} />
+              <Route path="reports/company-document-register" element={<CompanyDocumentRegisterReportPage />} />
+              <Route path="reports/pending-tax" element={<PendingTaxReportPage />} />
+              <Route path="reports/tax-payment-history" element={<TaxPaymentHistoryReportPage />} />
+              <Route path="reports/compliance-status" element={<ComplianceStatusReportPage />} />
+              <Route path="reports/company-registration" element={<CompanyRegistrationReportPage />} />
+              <Route path="reports/gst-filing" element={<GstFilingReportPage />} />
+              <Route path="reports/document-expiry" element={<DocumentExpiryReportPage />} />
+              <Route path="reports/audit" element={<AuditReportPage />} />
+              <Route path="reports/user-activity" element={<UserActivityReportPage />} />
 
               {/* Payments & Subscriptions */}
               <Route path="payments" element={<PaymentsPage />} />
