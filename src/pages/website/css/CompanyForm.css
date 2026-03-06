@@ -1,0 +1,118 @@
+.company-form h3 {
+  text-align: center;
+  margin-bottom: 28px;
+  color: var(--ds-text);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.tier1-section-progress {
+  margin: -8px 0 12px;
+  text-align: center;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tier1-section-card {
+  border: 1px solid #dde6f5;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #fbfdff, #f4f7fc);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.tier1-section-header {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #1e3a8a;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tier1-section-content {
+  padding: 0 16px 14px;
+  animation: tier1SectionFade 0.2s ease;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-input-wrap {
+  position: relative;
+}
+
+.form-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #93a2b8;
+  pointer-events: none;
+}
+
+.form-input-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 14px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-input-radius);
+  font-size: 15px;
+  color: #0f172a;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px var(--ds-focus);
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+@keyframes tier1SectionFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
