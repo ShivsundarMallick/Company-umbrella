@@ -1,0 +1,42 @@
+// Update company tier
+router.put("/:id/role", async (req, res) => {
+    try {
+        const { role } = req.body;
+        const company = await Company.findByIdAndUpdate(
+            req.params.id,
+            { tier: role },
+            { new: true }
+        );
+        if (!company) return res.status(404).json({ message: "Company not found" });
+        res.json(company);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Toggle company status
+router.put("/:id/status", async (req, res) => {
+    try {
+        const company = await Company.findById(req.params.id);
+        if (!company) return res.status(404).json({ message: "Company not found" });
+
+        company.status = company.status === "active" ? "inactive" : "active";
+        await company.save();
+        res.json(company);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete company
+router.delete("/:id", async (req, res) => {
+    try {
+        const company = await Company.findByIdAndDelete(req.params.id);
+        if (!company) return res.status(404).json({ message: "Company not found" });
+        res.json({ message: "Company deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+module.exports = router;

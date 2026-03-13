@@ -1,32 +1,32 @@
 import { apiService, buildQueryString } from './api';
 import type {
-  conformation, Review,
+  post, Review,
   Contact, Newsletter, User, DashboardStats,
   ListParams, ContentStats,
   ContactStats, NewsletterStats
 } from '@/types';
 
-// conformation Service
-export const conformationService = {
+// post Service
+export const postService = {
   getAll: (params?: ListParams) =>
-    apiService.get<conformation[]>(`/conformation?${buildQueryString(params || {})}`),
-  getById: (id: string) => apiService.get<conformation>(`/conformation/${id}`),
-  create: (data: Partial<conformation>) => apiService.post<conformation>('/conformation', data),
-  update: (id: string, data: Partial<conformation>) => apiService.put<conformation>(`/conformation/${id}`, data),
-  delete: (id: string) => apiService.delete<void>(`/conformation/${id}`),
-  togglePublish: (id: string) => apiService.put<conformation>(`/conformation/${id}/publish`),
-  toggleFeatured: (id: string) => apiService.put<conformation>(`/conformation/${id}/featured`),
-  getStats: () => apiService.get<ContentStats>('/conformation/admin/stats'),
+    apiService.get<post[]>(`/post?${buildQueryString(params || {})}`),
+  getById: (id: string) => apiService.get<post>(`/post/${id}`),
+  create: (data: Partial<post>) => apiService.post<post>('/post', data),
+  update: (id: string, data: Partial<post>) => apiService.put<post>(`/post/${id}`, data),
+  delete: (id: string) => apiService.delete<void>(`/post/${id}`),
+  togglePublish: (id: string) => apiService.put<post>(`/post/${id}/publish`),
+  toggleFeatured: (id: string) => apiService.put<post>(`/post/${id}/featured`),
+  getStats: () => apiService.get<ContentStats>('/post/admin/stats'),
 };
 export const articlesService = {
   getAll: (params?: ListParams) =>
-    apiService.get<conformation[]>(`/article?${buildQueryString(params || {})}`),
-  getById: (id: string) => apiService.get<conformation>(`/article/${id}`),
-  create: (data: Partial<conformation>) => apiService.post<conformation>('/article', data),
-  update: (id: string, data: Partial<conformation>) => apiService.put<conformation>(`/article/${id}`, data),
+    apiService.get<post[]>(`/article?${buildQueryString(params || {})}`),
+  getById: (id: string) => apiService.get<post>(`/article/${id}`),
+  create: (data: Partial<post>) => apiService.post<post>('/article', data),
+  update: (id: string, data: Partial<post>) => apiService.put<post>(`/article/${id}`, data),
   delete: (id: string) => apiService.delete<void>(`/article/${id}`),
-  togglePublish: (id: string) => apiService.put<conformation>(`/article/${id}/publish`),
-  toggleFeatured: (id: string) => apiService.put<conformation>(`/article/${id}/featured`),
+  togglePublish: (id: string) => apiService.put<post>(`/article/${id}/publish`),
+  toggleFeatured: (id: string) => apiService.put<post>(`/article/${id}/featured`),
   getStats: () => apiService.get<ContentStats>('/article/admin/stats'),
 };
 
@@ -85,6 +85,16 @@ export const usersService = {
   toggleStatus: (id: string) => apiService.put<User>(`/users/${id}/status`),
   delete: (id: string) => apiService.delete<void>(`/users/${id}`),
   getStats: () => apiService.get<DashboardStats>('/users/stats'),
+};
+
+// Companies Service
+export const companiesService = {
+  getAll: (params?: any) =>
+    apiService.get<any[]>(`/companies?${buildQueryString(params || {})}`),
+  getById: (id: string) => apiService.get<any>(`/companies/${id}`),
+  updateRole: (id: string, role: string) => apiService.put<any>(`/companies/${id}/role`, { role }),
+  toggleStatus: (id: string) => apiService.put<any>(`/companies/${id}/status`),
+  delete: (id: string) => apiService.delete<void>(`/companies/${id}`),
 };
 
 // Payments Service
@@ -152,7 +162,7 @@ export const uploadService = {
   /**
    * Upload a single file to cloud storage
    * @param file - File to upload
-   * @param folder - Folder category (avatars, thumbnails, resources, magazines, Reviews, conformation, resumes)
+   * @param folder - Folder category (avatars, thumbnails, resources, magazines, Reviews, post, resumes)
    * @returns Promise with uploaded file URL and metadata
    */
   uploadFile: async (file: File, folder: string = 'resources'): Promise<{ url: string; filename: string; size: number; mimeType: string }> => {
@@ -165,7 +175,7 @@ export const uploadService = {
     formData.append('file', file);
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/upload/${folder}`, {
-      method: 'conformation',
+      method: 'post',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -196,7 +206,7 @@ export const uploadService = {
     files.forEach(file => formData.append('files', file));
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/upload/${folder}/multiple`, {
-      method: 'conformation',
+      method: 'post',
       headers: {
         'Authorization': `Bearer ${token}`,
       },

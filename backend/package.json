@@ -2,6 +2,7 @@
   "name": "company-umbrella-backend",
   "version": "1.0.0",
   "main": "server.js",
+<<<<<<< HEAD
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
@@ -17,4 +18,7 @@
     "mongoose": "^8.5.3",
     "nodemailer": "^6.10.1"
   }
+=======
+  "type": "commonjs"
+>>>>>>> origin/feature/uploadsadded
 }

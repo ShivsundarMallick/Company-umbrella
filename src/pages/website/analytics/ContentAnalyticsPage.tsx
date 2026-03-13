@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FileText, Eye, ThumbsUp, TrendingUp, Calendar, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, Badge } from '../../../components/ui';
-import { conformationService, ReviewsService, engagementService } from '../../../services';
+import { postService, ReviewsService, engagementService } from '../../../services';
 
 interface ContentMetric {
   id: string;
   title: string;
-  type: 'conformation' | 'Review';
+  type: 'post' | 'Review';
   views: number;
   viewsTrend: number;
   likes: number;
@@ -16,7 +16,7 @@ interface ContentMetric {
 interface StatsData {
   totalViews: number;
   totalLikes: number;
-  conformationCount: number;
+  postCount: number;
   ReviewCount: number;
   topContent: ContentMetric[];
 }
@@ -27,7 +27,7 @@ export default function ContentAnalyticsPage() {
   const [stats, setStats] = useState<StatsData>({
     totalViews: 0,
     totalLikes: 0,
-    conformationCount: 0,
+    postCount: 0,
     ReviewCount: 0,
     topContent: [],
   });
@@ -41,11 +41,11 @@ export default function ContentAnalyticsPage() {
       setLoading(true);
 
       // Fetch all stats in parallel
-      const [conformationRes, ReviewsRes, engagementRes, topconformationRes] = await Promise.allSettled([
-        conformationService.getStats(),
+      const [postRes, ReviewsRes, engagementRes, toppostRes] = await Promise.allSettled([
+        postService.getStats(),
         ReviewsService.getStats(),
         engagementService.getStats(),
-        conformationService.getAll({ sort: 'views', order: 'desc', limit: 5 }),
+        postService.getAll({ sort: 'views', order: 'desc', limit: 5 }),
       ]);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,7 +56,7 @@ export default function ContentAnalyticsPage() {
         return null;
       };
 
-      const conformationData = extract(conformationRes) || {};
+      const postData = extract(postRes) || {};
       const ReviewsData = extract(ReviewsRes) || {};
       const engagementData = extract(engagementRes) || {};
 
@@ -70,35 +70,35 @@ export default function ContentAnalyticsPage() {
         }
       }
 
-      // Build top content from real conformation
+      // Build top content from real post
       const topContent: ContentMetric[] = [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const topconformationData = extract(topconformationRes) as any;
-      const topconformation = Array.isArray(topconformationData) ? topconformationData : (topconformationData?.conformation || topconformationData?.data || []);
+      const toppostData = extract(toppostRes) as any;
+      const toppost = Array.isArray(toppostData) ? toppostData : (toppostData?.post || toppostData?.data || []);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      for (const conformation of topconformation.slice(0, 5)) {
+      for (const post of toppost.slice(0, 5)) {
         topContent.push({
-          id: conformation._id,
-          title: conformation.title || 'Untitled',
-          type: 'conformation',
-          views: conformation.views || 0,
+          id: post._id,
+          title: post.title || 'Untitled',
+          type: 'post',
+          views: post.views || 0,
           viewsTrend: 0,
-          likes: conformation.likes || 0,
-          publishedAt: conformation.publishedAt || conformation.createdAt || '',
+          likes: post.likes || 0,
+          publishedAt: post.publishedAt || post.createdAt || '',
         });
       }
 
       // Sort combined content by views descending
       topContent.sort((a, b) => b.views - a.views);
 
-      const conformationtats = conformationData.stats || conformationData;
+      const posttats = postData.stats || postData;
       const ReviewStats = ReviewsData.stats || ReviewsData;
 
       setStats({
-        totalViews: (conformationtats.totalViews || conformationtats.views || 0),
+        totalViews: (posttats.totalViews || posttats.views || 0),
         totalLikes,
-        conformationCount: conformationtats.totalconformation || conformationtats.total || 0,
+        postCount: posttats.totalpost || posttats.total || 0,
         ReviewCount: ReviewStats.totalReviews || ReviewStats.total || 0,
         topContent: topContent.slice(0, 10),
       });
@@ -115,7 +115,7 @@ export default function ContentAnalyticsPage() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'conformation': return 'bg-blue-100 text-blue-600';
+      case 'post': return 'bg-blue-100 text-blue-600';
       case 'Review': return 'bg-purple-100 text-purple-600';
       default: return 'bg-gray-100 text-gray-600';
     }
@@ -213,10 +213,10 @@ export default function ContentAnalyticsPage() {
               <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium">conformation</span>
+                  <span className="font-medium">post</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">{stats.conformationCount}</p>
+                  <p className="font-semibold">{stats.postCount}</p>
                   <p className="text-sm text-gray-500">items</p>
                 </div>
               </div>

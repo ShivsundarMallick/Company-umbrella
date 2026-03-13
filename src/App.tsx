@@ -12,20 +12,16 @@ import UnauthorizedPage from './pages/auth/UnauthorizedPage';
 
 // Website Pages
 import WebsiteDashboard from './pages/website/DashboardPage';
-import CompanyRegistration from './pages/website/CompanyRegistration';
 import CompanyDetailPage from './pages/website/users/CompanyDetailPage';
-
-// conformation
-import ConformationListPage from './pages/website/conformation/conformationListPage';
+import UploadsLandingPage from './pages/website/uploads/UploadsLandingPage';
+import CompanyUploadFormPage from './pages/website/uploads/CompanyUploadFormPage';
+import CompanyRegistration from './pages/website/CompanyRegistration';
 
 // Reviews
-import ReviewsListPage from './pages/website/Reviews/ReviewsListPage';
 import ReviewFormPage from './pages/website/Reviews/CompanyReview';
 
 
-// Contacts & Newsletter
-import ContactsPage from './pages/website/contacts/ContactsPage';
-import UnreadContactsPage from './pages/website/contacts/UnreadPage';
+// Newsletter
 import NewsletterPage from './pages/website/newsletter/NewsletterPage';
 import ComposeNewsletterPage from './pages/website/newsletter/ComposeNewsletterPage';
 import CampaignsPage from './pages/website/newsletter/CampaignsPage';
@@ -40,32 +36,16 @@ import RolesPage from './pages/website/users/RolesPage';
 // Reports
 import ReportsDashboardPage from './pages/website/reports/ReportsDashboardPage';
 import TdsReportPage from './pages/website/reports/TdsReportPage';
+import GstFilingReportPage from './pages/website/reports/GstFilingReportPage';
+import DocumentExpiryReportPage from './pages/website/reports/DocumentExpiryReportPage';
+import AuditReportPage from './pages/website/reports/AuditReportPage';
+import UserActivityReportPage from './pages/website/reports/UserActivityReportPage';
 import CompanyPanRegisterReportPage from './pages/website/reports/CompanyPanRegisterReportPage';
 import CompanyDocumentRegisterReportPage from './pages/website/reports/CompanyDocumentRegisterReportPage';
 import PendingTaxReportPage from './pages/website/reports/PendingTaxReportPage';
 import TaxPaymentHistoryReportPage from './pages/website/reports/TaxPaymentHistoryReportPage';
 import ComplianceStatusReportPage from './pages/website/reports/ComplianceStatusReportPage';
 import CompanyRegistrationReportPage from './pages/website/reports/CompanyRegistrationReportPage';
-import GstFilingReportPage from './pages/website/reports/GstFilingReportPage';
-import DocumentExpiryReportPage from './pages/website/reports/DocumentExpiryReportPage';
-import AuditReportPage from './pages/website/reports/AuditReportPage';
-import UserActivityReportPage from './pages/website/reports/UserActivityReportPage';
-
-// Payments
-import PaymentsPage from './pages/website/payments/PaymentsPage';
-import InvoicesPage from './pages/website/payments/InvoicesPage';
-import SubscriptionsPage from './pages/website/payments/SubscriptionsPage';
-import RefundsPage from './pages/website/payments/RefundsPage';
-
-// Support Pages
-import {
-  SupportDashboardPage,
-  MessagesPage as SupportMessagesPage,
-  TicketsPage,
-  LiveChatPage,
-  FAQPage,
-  SupportSettingsPage,
-} from './pages/support';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -123,19 +103,9 @@ function App() {
             >
               <Route index element={<Navigate to="/website/dashboard" replace />} />
               <Route path="dashboard" element={<WebsiteDashboard />} />
-
-              {/* conformation */}
-              <Route path="conformation" element={<ConformationListPage />} />
-
-
-              {/* Reviews */}
-              <Route path="Reviews" element={<ReviewsListPage />} />
-
-
               <Route path="company-registration" element={<CompanyRegistration />} />
-              {/* Contacts & Newsletter */}
-              <Route path="contacts" element={<ContactsPage />} />
-              <Route path="contacts/unread" element={<UnreadContactsPage />} />
+
+              {/* Newsletter */}
               <Route path="newsletter" element={<NewsletterPage />} />
               <Route path="newsletter/compose" element={<ComposeNewsletterPage />} />
               <Route path="newsletter/compose/:id" element={<ComposeNewsletterPage />} />
@@ -181,33 +151,22 @@ function App() {
               {/* Reports */}
               <Route path="reports" element={<ReportsDashboardPage />} />
               <Route path="reports/tds" element={<TdsReportPage />} />
+              <Route path="reports/gst-filing" element={<GstFilingReportPage />} />
+              <Route path="reports/document-expiry" element={<DocumentExpiryReportPage />} />
+              <Route path="reports/audit" element={<AuditReportPage />} />
+              <Route path="reports/user-activity" element={<UserActivityReportPage />} />
               <Route path="reports/company-pan-register" element={<CompanyPanRegisterReportPage />} />
               <Route path="reports/company-document-register" element={<CompanyDocumentRegisterReportPage />} />
               <Route path="reports/pending-tax" element={<PendingTaxReportPage />} />
               <Route path="reports/tax-payment-history" element={<TaxPaymentHistoryReportPage />} />
               <Route path="reports/compliance-status" element={<ComplianceStatusReportPage />} />
               <Route path="reports/company-registration" element={<CompanyRegistrationReportPage />} />
-              <Route path="reports/gst-filing" element={<GstFilingReportPage />} />
-              <Route path="reports/document-expiry" element={<DocumentExpiryReportPage />} />
-              <Route path="reports/audit" element={<AuditReportPage />} />
-              <Route path="reports/user-activity" element={<UserActivityReportPage />} />
-
-              {/* Payments & Subscriptions */}
-              <Route path="payments" element={<PaymentsPage />} />
-              <Route path="payments/invoices" element={<InvoicesPage />} />
-              <Route path="payments/subscriptions" element={<SubscriptionsPage />} />
-              <Route path="payments/refunds" element={<RefundsPage />} />
-
-              {/* Support Routes */}
-              <Route path="support" element={<SupportDashboardPage />} />
-              <Route path="support/messages" element={<SupportMessagesPage />} />
-              <Route path="support/tickets" element={<TicketsPage />} />
-              <Route path="support/tickets/:id" element={<TicketsPage />} />
-              <Route path="support/chat" element={<LiveChatPage />} />
-              <Route path="support/faq" element={<FAQPage />} />
-              <Route path="support/settings" element={<SupportSettingsPage />} />
 
               <Route path="reviews/:id" element={<ReviewFormPage />} />
+
+              {/* Uploads */}
+              <Route path="uploads" element={<UploadsLandingPage />} />
+              <Route path="uploads/:companyId" element={<CompanyUploadFormPage />} />
             </Route>
 
 

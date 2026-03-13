@@ -307,7 +307,7 @@ const MediaUploadModal = ({
     setError(null);
 
     try {
-      const folder = type === 'image' ? 'conformation' : type === 'video' ? 'videos' : 'files';
+      const folder = type === 'image' ? 'post' : type === 'video' ? 'videos' : 'files';
       const result = await uploadService.uploadFile(file, folder);
       onInsert({
         src: result.url,
@@ -888,7 +888,7 @@ export default function RichTextEditor({
           const file = event.dataTransfer.files[0];
           if (file.type.startsWith('image/')) {
             event.preventDefault();
-            uploadService.uploadFile(file, 'conformation').then((result) => {
+            uploadService.uploadFile(file, 'post').then((result) => {
               const { schema } = view.state;
               const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
               const node = schema.nodes.image.create({ src: result.url });
@@ -910,7 +910,7 @@ export default function RichTextEditor({
               event.preventDefault();
               const file = items[i].getAsFile();
               if (file) {
-                uploadService.uploadFile(file, 'conformation').then((result) => {
+                uploadService.uploadFile(file, 'post').then((result) => {
                   const { schema } = view.state;
                   const node = schema.nodes.image.create({ src: result.url });
                   const transaction = view.state.tr.replaceSelectionWith(node);

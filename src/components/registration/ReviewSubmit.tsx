@@ -11,7 +11,6 @@ const ReviewSubmit = ({ tier, formData, onSubmit }: any) => {
     gstNumber: 'GST Number',
     annualRevenue: 'Annual Revenue',
     businessType: 'Business Type',
-    industryType: 'Industry Type',
     companyType: 'Company Type',
     parentCompanyName: 'Parent Company Name',
     numberOfBranches: 'Number of Branches',
@@ -25,59 +24,43 @@ const ReviewSubmit = ({ tier, formData, onSubmit }: any) => {
     auditFirmName: 'Audit Firm Name',
     lastAuditDate: 'Last Audit Date',
     paidUpCapital: 'Paid-up Capital',
-    netWorth: 'Net Worth',
+    authorisedCapital: 'Authorised Capital',
     lastYearTurnover: 'Last Year Turnover',
-    registrationDate: 'Registration Date',
-    expiryDate: 'Expiry Date'
+    registrationDate: 'Registration Date'
   };
 
+  const unifiedFields = [
+    'companyName',
+    'numberOfEmployees',
+    'taxNumber',
+    'companyPanNumber',
+    'companyCinNumber',
+    'itrNumber',
+    'gstNumber',
+    'annualRevenue',
+    'businessType',
+    'companyType',
+    'parentCompanyName',
+    'numberOfBranches',
+    'officialCompanyEmail',
+    'companyContactNumber',
+    'companyWebsite',
+    'headOfficeLocation',
+    'complianceOfficerName',
+    'complianceOfficerEmail',
+    'complianceOfficerPhone',
+    'auditFirmName',
+    'lastAuditDate',
+    'paidUpCapital',
+    'authorisedCapital',
+    'lastYearTurnover',
+    'registrationDate'
+  ];
+
   const fieldsByTier = {
-    'Tier 1': [
-      'companyName',
-      'numberOfEmployees',
-      'taxNumber',
-      'companyPanNumber',
-      'companyCinNumber',
-      'itrNumber',
-      'gstNumber',
-      'annualRevenue',
-      'businessType',
-      'industryType',
-      'companyType',
-      'parentCompanyName',
-      'numberOfBranches',
-      'officialCompanyEmail',
-      'companyContactNumber',
-      'companyWebsite',
-      'headOfficeLocation',
-      'complianceOfficerName',
-      'complianceOfficerEmail',
-      'complianceOfficerPhone',
-      'auditFirmName',
-      'lastAuditDate',
-      'paidUpCapital',
-      'netWorth',
-      'lastYearTurnover',
-      'registrationDate',
-      'expiryDate'
-    ],
-    'Tier 2': [
-      'companyName',
-      'numberOfEmployees',
-      'taxNumber',
-      'itrNumber',
-      'gstNumber',
-      'annualRevenue',
-      'registrationDate',
-      'expiryDate'
-    ],
-    'Tier 3': [
-      'companyName',
-      'numberOfEmployees',
-      'taxNumber',
-      'registrationDate',
-      'expiryDate'
-    ]
+    'Tier 1': unifiedFields,
+    'Tier 2': unifiedFields,
+    'Tier 3': unifiedFields
   };
 
   const getTierDescription = () => {
@@ -90,7 +73,7 @@ const ReviewSubmit = ({ tier, formData, onSubmit }: any) => {
   };
 
   const handleSubmit = () => {
-    onSubmit({ tier, ...formData });
+    onSubmit({ tier, formData });
   };
 
   const reviewFields = ((fieldsByTier as any)[tier] || []).map((field: any) => ({

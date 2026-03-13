@@ -21,10 +21,10 @@ export const MIN_ADMIN_ROLE = ROLES.MANAGER;
 
 export const PERMISSIONS = {
   // Content management
-  CREATE_conformation: 'create_conformation',
-  EDIT_conformation: 'edit_conformation',
-  DELETE_conformation: 'delete_conformation',
-  PUBLISH_conformation: 'publish_conformation',
+  CREATE_post: 'create_post',
+  EDIT_post: 'edit_post',
+  DELETE_post: 'delete_post',
+  PUBLISH_post: 'publish_post',
   CREATE_Review: 'create_Review',
   EDIT_Review: 'edit_Review',
   DELETE_Review: 'delete_Review',
@@ -98,49 +98,18 @@ export const NAVIGATION: Record<string, NavItem[]> = {
       permission: null
     },
 
-    // Content Management
-    {
-      name: 'conformation',
-      href: '/website/conformation',
-      icon: 'FileText',
-      permission: PERMISSIONS.CREATE_conformation,
-    },
+    // Reviews
     {
       name: 'Reviews',
       href: '/website/Reviews',
-      icon: 'GraduationCap',
+      icon: 'UserStar',
       permission: PERMISSIONS.CREATE_Review,
     },
-    // Contacts & Newsletter
     {
-      name: 'Contacts',
-      href: '/website/contacts',
-      icon: 'Mail',
-      permission: PERMISSIONS.VIEW_CONTACTS,
-      children: [
-        { name: 'All Messages', href: '/website/contacts', icon: 'Inbox', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Unread', href: '/website/contacts/unread', icon: 'MailWarning', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Subscribers', href: '/website/newsletter', icon: 'Users', permission: PERMISSIONS.VIEW_SUBSCRIBERS },
-        { name: 'Compose Email', href: '/website/newsletter/compose', icon: 'Send', permission: PERMISSIONS.VIEW_SUBSCRIBERS },
-        { name: 'Campaigns', href: '/website/newsletter/campaigns', icon: 'Mail', permission: PERMISSIONS.VIEW_SUBSCRIBERS },
-        { name: 'Templates', href: '/website/newsletter/templates', icon: 'FileText', permission: PERMISSIONS.VIEW_SUBSCRIBERS },
-      ]
-    },
-
-    // Support System
-    {
-      name: 'Support',
-      href: '/website/support',
-      icon: 'HelpCircle',
-      permission: PERMISSIONS.VIEW_CONTACTS,
-      children: [
-        { name: 'Dashboard', href: '/website/support', icon: 'LayoutDashboard', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Messages', href: '/website/support/messages', icon: 'Inbox', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Tickets', href: '/website/support/tickets', icon: 'Ticket', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Live Chat', href: '/website/support/chat', icon: 'MessageSquare', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'FAQ', href: '/website/support/faq', icon: 'HelpCircle', permission: PERMISSIONS.VIEW_CONTACTS },
-        { name: 'Settings', href: '/website/support/settings', icon: 'Settings', permission: PERMISSIONS.VIEW_CONTACTS },
-      ]
+      name: 'Upload',
+      href: '/website/uploads',
+      icon: 'Upload',
+      permission: PERMISSIONS.VIEW_USERS,
     },
 
     // Users & Access
@@ -153,20 +122,6 @@ export const NAVIGATION: Record<string, NavItem[]> = {
         { name: 'All Companies', href: '/website/users', icon: 'List', permission: PERMISSIONS.VIEW_USERS },
         { name: 'Admins', href: '/website/users/admins', icon: 'Shield', permission: PERMISSIONS.VIEW_ADMINS },
         { name: 'Tiers', href: '/website/users/roles', icon: 'Key', permission: PERMISSIONS.VIEW_ADMINS },
-      ]
-    },
-
-    // Payments & Revenue
-    {
-      name: 'Payments',
-      href: '/website/payments',
-      icon: 'CreditCard',
-      permission: PERMISSIONS.VIEW_ALL_PAYMENTS,
-      children: [
-        { name: 'Transactions', href: '/website/payments', icon: 'Receipt', permission: PERMISSIONS.VIEW_ALL_PAYMENTS },
-        { name: 'Invoices', href: '/website/payments/invoices', icon: 'FileText', permission: PERMISSIONS.VIEW_ALL_PAYMENTS },
-        { name: 'Subscriptions', href: '/website/payments/subscriptions', icon: 'RefreshCw', permission: PERMISSIONS.VIEW_ALL_PAYMENTS },
-        { name: 'Refunds', href: '/website/payments/refunds', icon: 'RotateCcw', permission: PERMISSIONS.REFUND_PAYMENT },
       ]
     },
 
@@ -221,7 +176,7 @@ export const ARTICLE_CATEGORIES = [
   { value: 'Environment', label: 'Environment' },
   { value: 'Ethics', label: 'Ethics' },
 ];
-export const conformation_CATEGORIES = [
+export const post_CATEGORIES = [
   { value: 'Current Affairs', label: 'Current Affairs' },
   { value: 'Strategy', label: 'Strategy' },
   { value: 'Study Tips', label: 'Study Tips' },

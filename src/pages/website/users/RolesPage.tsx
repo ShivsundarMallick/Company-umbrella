@@ -23,8 +23,8 @@ interface Role {
 }
 
 const defaultPermissions: Permission[] = [
-  { id: 'conformation.read', name: 'View conformation', description: 'Can view all conformation' },
-  { id: 'conformation.write', name: 'Manage conformation', description: 'Can create, edit, delete conformation' },
+  { id: 'post.read', name: 'View post', description: 'Can view all post' },
+  { id: 'post.write', name: 'Manage post', description: 'Can create, edit, delete post' },
   { id: 'Reviews.read', name: 'View Reviews', description: 'Can view all Reviews' },
   { id: 'Reviews.write', name: 'Manage Reviews', description: 'Can create, edit, delete Reviews' },
   { id: 'resources.read', name: 'View Resources', description: 'Can view all resources' },
@@ -51,7 +51,7 @@ const defaultRoles: Role[] = [
     id: '2',
     name: 'Admin',
     description: 'Can manage content and users',
-    permissions: ['conformation.read', 'conformation.write', 'Reviews.read', 'Reviews.write', 'resources.read', 'resources.write', 'users.read', 'analytics.read'],
+    permissions: ['post.read', 'post.write', 'Reviews.read', 'Reviews.write', 'resources.read', 'resources.write', 'users.read', 'analytics.read'],
     userCount: 3,
     isSystem: true,
   },
@@ -59,7 +59,7 @@ const defaultRoles: Role[] = [
     id: '3',
     name: 'Editor',
     description: 'Can manage content only',
-    permissions: ['conformation.read', 'conformation.write', 'Reviews.read', 'Reviews.write', 'resources.read', 'resources.write'],
+    permissions: ['post.read', 'post.write', 'Reviews.read', 'Reviews.write', 'resources.read', 'resources.write'],
     userCount: 5,
     isSystem: false,
   },
@@ -67,7 +67,7 @@ const defaultRoles: Role[] = [
     id: '4',
     name: 'Viewer',
     description: 'Read-only access',
-    permissions: ['conformation.read', 'Reviews.read', 'resources.read', 'users.read', 'analytics.read'],
+    permissions: ['post.read', 'Reviews.read', 'resources.read', 'users.read', 'analytics.read'],
     userCount: 2,
     isSystem: false,
   },

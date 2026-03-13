@@ -1,6 +1,6 @@
 import '../../pages/website/css/CompanyForm.css';
 
-const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
+const UnifiedCompanyForm = ({ formData, onFormChange, activeSection = 1, tier = 'Tier 1' }: any) => {
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     onFormChange({
@@ -39,7 +39,7 @@ const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
 
   return (
     <div className="company-form">
-      <h3>Company Details - Tier 1 (Large Company)</h3>
+      <h3>Company Details - {tier}</h3>
       <div className="tier1-section-progress">Section {activeSection} of 4</div>
 
       {activeSection === 1 && (
@@ -50,27 +50,29 @@ const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
           <div className="tier1-section-content">
             <div className="form-row">
               {inputField('companyName', 'Company Name', 'text', 'Enter company name')}
-              {selectField('businessType', 'Business Type', ['Manufacturing', 'Services', 'Trading', 'Technology', 'Other'])}
+              {selectField('businessType', 'Business Type', ['Manufacturing', 'Services', 'Trading', 'IT', 'Other'])}
             </div>
             <div className="form-row">
-              {selectField('industryType', 'Industry Type', ['IT', 'Manufacturing', 'Finance', 'Healthcare', 'Retail', 'Other'])}
-              {selectField('companyType', 'Company Type', ['Private', 'Public', 'LLP'])}
-            </div>
-            <div className="form-row">
+              {selectField('companyType', 'Company Type', [
+                'OPC - One Person Company',
+                'SPC - Section 8 Company',
+                'FPC - Farmer Company',
+                'Trust',
+                'Partnership'
+              ])}
               {inputField('parentCompanyName', 'Parent Company Name', 'text', 'Enter parent company name')}
+            </div>
+            <div className="form-row">
               {inputField('numberOfEmployees', 'Number of Employees', 'number', 'Enter number of employees')}
-            </div>
-            <div className="form-row">
               {inputField('numberOfBranches', 'Number of Branches', 'number', 'Enter number of branches')}
+            </div>
+            <div className="form-row">
               {inputField('headOfficeLocation', 'Head Office Location', 'text', 'Enter head office location')}
-            </div>
-            <div className="form-row">
               {inputField('officialCompanyEmail', 'Official Company Email', 'email', 'Enter official company email')}
-              {inputField('companyContactNumber', 'Company Contact Number', 'tel', 'Enter company contact number')}
             </div>
             <div className="form-row">
+              {inputField('companyContactNumber', 'Company Contact Number', 'tel', 'Enter company contact number')}
               {inputField('companyWebsite', 'Company Website', 'url', 'https://example.com')}
-              <div className="form-group"></div>
             </div>
           </div>
         </div>
@@ -94,10 +96,6 @@ const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
               {inputField('itrNumber', 'ITR Number', 'text', 'Enter ITR number')}
               {inputField('registrationDate', 'Company Registration Date', 'date')}
             </div>
-            <div className="form-row">
-              {inputField('expiryDate', 'Expiry Date', 'date')}
-              <div className="form-group"></div>
-            </div>
           </div>
         </div>
       )}
@@ -113,7 +111,7 @@ const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
               {inputField('paidUpCapital', 'Paid-up Capital', 'number', 'Enter paid-up capital')}
             </div>
             <div className="form-row">
-              {inputField('netWorth', 'Net Worth', 'number', 'Enter net worth')}
+              {inputField('authorisedCapital', 'Authorised Capital', 'number', 'Enter authorised capital')}
               {inputField('lastYearTurnover', 'Last Year Turnover', 'number', 'Enter last year turnover')}
             </div>
           </div>
@@ -145,4 +143,4 @@ const Tier1Form = ({ formData, onFormChange, activeSection = 1 }: any) => {
   );
 };
 
-export default Tier1Form;
+export default UnifiedCompanyForm;
