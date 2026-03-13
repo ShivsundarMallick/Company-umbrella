@@ -18,6 +18,7 @@ import CompanyUploadFormPage from './pages/website/uploads/CompanyUploadFormPage
 import CompanyRegistration from './pages/website/CompanyRegistration';
 
 // Reviews
+import ReviewsListPage from './pages/website/Reviews/ReviewsListPage';
 import ReviewFormPage from './pages/website/Reviews/CompanyReview';
 
 
@@ -162,6 +163,7 @@ function App() {
               <Route path="reports/compliance-status" element={<ComplianceStatusReportPage />} />
               <Route path="reports/company-registration" element={<CompanyRegistrationReportPage />} />
 
+              <Route path="reviews" element={<ReviewsListPage />} />
               <Route path="reviews/:id" element={<ReviewFormPage />} />
 
               {/* Uploads */}

@@ -101,7 +101,7 @@ export const NAVIGATION: Record<string, NavItem[]> = {
     // Reviews
     {
       name: 'Reviews',
-      href: '/website/Reviews',
+      href: '/website/reviews',
       icon: 'UserStar',
       permission: PERMISSIONS.CREATE_Review,
     },

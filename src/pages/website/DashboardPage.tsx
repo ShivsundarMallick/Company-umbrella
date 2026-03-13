@@ -300,7 +300,7 @@ export default function DashboardPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <QuickAction label="Register" description="Register as a company" href="/website/company-registration" icon={FileText} color="blue" />
-          <QuickAction label="Review Companies" description="for admins" href="/website/Reviews" icon={GraduationCap} color="green" />
+          <QuickAction label="Review Companies" description="for admins" href="/website/reviews" icon={GraduationCap} color="green" />
         </div>
       </div>
 

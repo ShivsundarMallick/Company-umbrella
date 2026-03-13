@@ -1,16 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Building2, ZoomIn, FileImage } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Building2, ZoomIn, FileImage, Loader2 } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '../../../components/ui';
 
 import { Dialog, DialogContent, DialogTrigger } from '../../../components/ui/dialog';
-import { allMockCompanies } from '../../../data/mockCompanies';
+import { companiesService } from '../../../services';
 import mockPanCard from '@/assets/mock-pan-card.jpg';
 import mockGstCert from '@/assets/mock-gst-certificate.jpg';
 import mockCinCert from '@/assets/mock-cin-certificate.jpg';
 import mockItrDoc from '@/assets/mock-itr-document.jpg';
 import mockTaxCert from '@/assets/mock-tax-certificate.jpg';
 import mockAuditReport from '@/assets/mock-audit-report.jpg';
+
 interface DetailField {
     label: string;
     key: string;
@@ -19,7 +20,11 @@ interface DetailField {
     documentLabel?: string;
 }
 
-const formatCurrency = (v: string) => `₹${Number(v).toLocaleString('en-IN')}`;
+const formatCurrency = (v: string) => {
+    const num = Number(v);
+    if (isNaN(num)) return v || '-';
+    return `₹${num.toLocaleString('en-IN')}`;
+};
 
 // Tier 1 pages (split rich data across multiple pages, small fields grouped)
 const tier1Pages: { title: string; fields: DetailField[] }[] = [
@@ -28,7 +33,6 @@ const tier1Pages: { title: string; fields: DetailField[] }[] = [
         fields: [
             { label: 'Company Name', key: 'companyName' },
             { label: 'Business Type', key: 'businessType' },
-            { label: 'Industry Type', key: 'industryType' },
             { label: 'Company Type', key: 'companyType' },
             { label: 'Parent Company', key: 'parentCompanyName' },
             { label: 'Employees', key: 'numberOfEmployees' },
@@ -47,14 +51,12 @@ const tier1Pages: { title: string; fields: DetailField[] }[] = [
     {
         title: 'Legal & Registration',
         fields: [
-
             { label: 'PAN Number', key: 'companyPanNumber', documentImage: mockPanCard, documentLabel: 'PAN Card' },
             { label: 'CIN Number', key: 'companyCinNumber', documentImage: mockCinCert, documentLabel: 'Incorporation Certificate' },
             { label: 'GST Number', key: 'gstNumber', documentImage: mockGstCert, documentLabel: 'GST Certificate' },
             { label: 'Tax Number', key: 'taxNumber', documentImage: mockTaxCert, documentLabel: 'Tax Registration' },
             { label: 'ITR Number', key: 'itrNumber', documentImage: mockItrDoc, documentLabel: 'ITR Acknowledgement' },
             { label: 'Registration Date', key: 'registrationDate' },
-            { label: 'Expiry Date', key: 'expiryDate' },
         ],
     },
     {
@@ -62,7 +64,7 @@ const tier1Pages: { title: string; fields: DetailField[] }[] = [
         fields: [
             { label: 'Annual Revenue', key: 'annualRevenue', format: formatCurrency },
             { label: 'Paid-up Capital', key: 'paidUpCapital', format: formatCurrency },
-            { label: 'Net Worth', key: 'netWorth', format: formatCurrency },
+            { label: 'Authorised Capital', key: 'authorisedCapital', format: formatCurrency },
             { label: 'Last Year Turnover', key: 'lastYearTurnover', format: formatCurrency },
         ],
     },
@@ -95,7 +97,6 @@ const tier2Pages: { title: string; fields: DetailField[] }[] = [
             { label: 'Tax Number', key: 'taxNumber', documentImage: mockTaxCert, documentLabel: 'Tax Registration' },
             { label: 'ITR Number', key: 'itrNumber', documentImage: mockItrDoc, documentLabel: 'ITR Acknowledgement' },
             { label: 'Registration Date', key: 'registrationDate' },
-            { label: 'Expiry Date', key: 'expiryDate' },
         ],
     },
 ];
@@ -109,7 +110,6 @@ const tier3Pages: { title: string; fields: DetailField[] }[] = [
             { label: 'Employees', key: 'numberOfEmployees' },
             { label: 'Tax Number', key: 'taxNumber', documentImage: mockTaxCert, documentLabel: 'Tax Certificate' },
             { label: 'Registration Date', key: 'registrationDate' },
-            { label: 'Expiry Date', key: 'expiryDate' },
         ],
     },
 ];
@@ -118,7 +118,9 @@ function getPagesForTier(role: string) {
     if (role === 'Tier 1') return tier1Pages;
     if (role === 'Tier 2') return tier2Pages;
     return tier3Pages;
-} function DocumentProof({ image, label }: { image: string; label: string }) {
+} 
+
+function DocumentProof({ image, label }: { image: string; label: string }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -149,25 +151,76 @@ function getPagesForTier(role: string) {
         </Dialog>
     );
 }
+
 export default function CompanyReviewPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [company, setCompany] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const company = useMemo(() => allMockCompanies.find((c) => c._id === id), [id]);
+    useEffect(() => {
+        const fetchCompany = async () => {
+            if (!id) return;
+            try {
+                setLoading(true);
+                const response = await companiesService.getById(id);
+                if (response.success && response.data) {
+                    const c = response.data;
+                    setCompany({
+                        _id: c._id,
+                        name: c.companyData?.companyName || 'Unknown',
+                        email: c.companyData?.officialCompanyEmail || 'No email',
+                        role: c.tier,
+                        details: c.companyData || {}
+                    });
+                } else {
+                    setError('Company not found');
+                }
+            } catch (err) {
+                console.error('Failed to fetch company review details:', err);
+                setError('Failed to load company details');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCompany();
+    }, [id]);
 
     const pages = useMemo(() => (company ? getPagesForTier(company.role) : []), [company]);
     const totalPages = pages.length;
 
     const [currentPage, setCurrentPage] = useState(0);
-    const [pageStatuses, setPageStatuses] = useState<Record<number, 'approved' | 'rejected' | null>>(
-        () => Object.fromEntries(Array.from({ length: totalPages }, (_, i) => [i, null]))
-    );
+    const [pageStatuses, setPageStatuses] = useState<Record<number, 'approved' | 'rejected' | null>>({});
 
-    if (!company) {
+    // Initialize pageStatuses when totalPages changes
+    useEffect(() => {
+        if (totalPages > 0) {
+            setPageStatuses(Object.fromEntries(Array.from({ length: totalPages }, (_, i) => [i, null])));
+        }
+    }, [totalPages]);
+
+    if (loading) {
         return (
-            <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-                <p className="text-muted-foreground">Company not found</p>
-                <Button variant="outline" className="mt-4" onClick={() => navigate('/website/reviews')}>
+            <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                <p className="text-muted-foreground font-medium">Loading review details...</p>
+            </div>
+        );
+    }
+
+    if (error || !company) {
+        return (
+            <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                    <Building2 className="w-8 h-8 text-red-600" />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{error || 'Company Not Found'}</h2>
+                    <p className="text-muted-foreground">The application you are looking for could not be found.</p>
+                </div>
+                <Button variant="outline" onClick={() => navigate('/website/reviews')}>
                     Back to Reviews
                 </Button>
             </div>
@@ -177,9 +230,9 @@ export default function CompanyReviewPage() {
     const page = pages[currentPage];
     const pageStatus = pageStatuses[currentPage];
     const anyRejected = Object.values(pageStatuses).some((s) => s === 'rejected');
-    const allApproved = Object.values(pageStatuses).every((s) => s === 'approved');
+    const allApproved = totalPages > 0 && Object.values(pageStatuses).every((s) => s === 'approved') && Object.keys(pageStatuses).length === totalPages;
 
-    const allDecided = Object.values(pageStatuses).every((s) => s !== null);
+    const allDecided = totalPages > 0 && Object.values(pageStatuses).every((s) => s !== null) && Object.keys(pageStatuses).length === totalPages;
 
     const overallStatus = anyRejected ? 'rejected' : allApproved ? 'approved' : 'pending';
 
@@ -204,7 +257,7 @@ export default function CompanyReviewPage() {
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
             {/* Back + Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => navigate(`/website/reviews/${company._id}`)} className="p-2 rounded-lg hover:bg-accent transition-colors">
+                <button onClick={() => navigate('/website/reviews')} className="p-2 rounded-lg hover:bg-accent transition-colors">
                     <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                 </button>
                 <div className="flex-1 min-w-0">
@@ -247,53 +300,55 @@ export default function CompanyReviewPage() {
             </div>
 
             {/* Page content */}
-            <Card className="border-0 shadow-md">
-                <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">{page.title}</CardTitle>
-                        <span className="text-xs text-muted-foreground">
-                            Page {currentPage + 1} of {totalPages}
-                        </span>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {page.fields.map((field) => {
-                            const value = (company.details as any)[field.key];
-                            if (!value && value !== 0) return null;
-                            if (field.documentImage) {
+            {page && (
+                <Card className="border-0 shadow-md">
+                    <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg">{page.title}</CardTitle>
+                            <span className="text-xs text-muted-foreground">
+                                Page {currentPage + 1} of {totalPages}
+                            </span>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {page.fields.map((field) => {
+                                const value = (company.details as any)[field.key];
+                                if (!value && value !== 0) return null;
+                                if (field.documentImage) {
+                                    return (
+                                        <div key={field.key} className="flex items-stretch gap-4 p-3 rounded-lg bg-muted/30 border border-border/50">
+                                            <div className="flex-1 flex flex-col justify-center space-y-1">
+                                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.label}</p>
+                                                <p className="text-sm font-semibold text-foreground font-mono">{field.format ? field.format(value) : value}</p>
+                                            </div>
+                                            <div className="w-40 flex-shrink-0">
+                                                <DocumentProof image={field.documentImage} label={field.documentLabel || field.label} />
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
                                 return (
-                                    <div key={field.key} className="flex items-stretch gap-4 p-3 rounded-lg bg-muted/30 border border-border/50">
-                                        <div className="flex-1 flex flex-col justify-center space-y-1">
-                                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.label}</p>
-                                            <p className="text-sm font-semibold text-foreground font-mono">{field.format ? field.format(value) : value}</p>
-                                        </div>
-                                        <div className="w-40 flex-shrink-0">
-                                            <DocumentProof image={field.documentImage} label={field.documentLabel || field.label} />
-                                        </div>
+                                    <div key={field.key} className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-3 py-2">
+                                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.label}</p>
+                                        <p className="text-sm font-medium text-foreground">
+                                            {field.format ? field.format(value) : value}
+                                        </p>
                                     </div>
                                 );
-                            }
-
-                            return (
-                                <div key={field.key} className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-3 py-2">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.label}</p>
-                                    <p className="text-sm font-medium text-foreground">
-                                        {field.format ? field.format(value) : value}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Page status indicator */}
-                    {pageStatus && (
-                        <div className={`mt-6 p-3 rounded-lg border text-sm font-medium text-center ${statusColors[pageStatus]}`}>
-                            {pageStatus === 'approved' ? '✓ This section has been approved' : '✗ This section has been rejected'}
+                            })}
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+
+                        {/* Page status indicator */}
+                        {pageStatus && (
+                            <div className={`mt-6 p-3 rounded-lg border text-sm font-medium text-center ${statusColors[pageStatus]}`}>
+                                {pageStatus === 'approved' ? '✓ This section has been approved' : '✗ This section has been rejected'}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Navigation + Actions */}
             <div className="flex items-center justify-between gap-3">
