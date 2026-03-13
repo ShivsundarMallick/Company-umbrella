@@ -1,24 +1,58 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, Button, Badge } from '../../../components/ui';
-import { ArrowLeft, Building2, Globe, Mail, Phone, Shield, CreditCard, PieChart } from 'lucide-react';
-import { tier1MockCompanies } from './Tier1MockData';
-import { tier2MockCompanies } from './Tier2MockData';
-import { tier3MockCompanies } from './Tier3MockData';
+import { ArrowLeft, Building2, Globe, Mail, Phone, Shield, CreditCard, PieChart, Loader2 } from 'lucide-react';
+import { companiesService } from '../../../services';
 import { format } from 'date-fns';
 
 const CompanyDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [company, setCompany] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Find company in mock data
-    const allMocks = [...tier1MockCompanies, ...tier2MockCompanies, ...tier3MockCompanies];
-    const company = allMocks.find(c => c._id === id);
+    useEffect(() => {
+        const fetchCompany = async () => {
+            if (!id) return;
+            try {
+                setLoading(true);
+                const response = await companiesService.getById(id);
+                if (response.success && response.data) {
+                    setCompany(response.data);
+                } else {
+                    setError('Company not found');
+                }
+            } catch (err) {
+                console.error('Failed to fetch company details:', err);
+                setError('Failed to load company details');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    if (!company) {
+        fetchCompany();
+    }, [id]);
+
+    if (loading) {
         return (
-            <div className="p-8 text-center">
-                <h2 className="text-2xl font-bold">Company Not Found</h2>
-                <p className="text-gray-500 mt-2">The company you are looking for does not exist in our mock records.</p>
+            <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+                <p className="text-gray-500 font-medium">Loading company details...</p>
+            </div>
+        );
+    }
+
+    if (error || !company) {
+        return (
+            <div className="p-8 text-center space-y-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                    <Building2 className="w-8 h-8 text-red-600" />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{error || 'Company Not Found'}</h2>
+                    <p className="text-gray-500 mt-2">The company you are looking for could not be found or an error occurred.</p>
+                </div>
                 <Button onClick={() => navigate('/website/users')} className="mt-4">
                     Back to Companies
                 </Button>
@@ -26,7 +60,11 @@ const CompanyDetailPage = () => {
         );
     }
 
-    const details = company.details as any;
+    const details = company.companyData || {};
+    const isActive = company.status === 'active' || company.status === 'registered';
+    const name = details.companyName || 'Unknown';
+    const role = company.tier || 'Unknown';
+    const createdAt = company.createdAt || new Date().toISOString();
 
     const sectionHeader = (icon: any, title: string) => (
         <div className="flex items-center gap-2 pb-2 mb-4 border-b border-gray-100">
@@ -54,13 +92,13 @@ const CompanyDetailPage = () => {
                         <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
                         <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="default">{company.role}</Badge>
-                            <Badge variant={company.isActive ? 'default' : 'destructive'}>
-                                {company.isActive ? 'Active' : 'Inactive'}
+                            <Badge variant="default">{role}</Badge>
+                            <Badge variant={isActive ? 'default' : 'destructive'}>
+                                {isActive ? 'Active' : 'Inactive'}
                             </Badge>
-                            <span className="text-sm text-gray-500">Joined {format(new Date(company.createdAt), 'MMM d, yyyy')}</span>
+                            <span className="text-sm text-gray-500">Joined {format(new Date(createdAt), 'MMM d, yyyy')}</span>
                         </div>
                     </div>
                 </div>
@@ -76,10 +114,9 @@ const CompanyDetailPage = () => {
                     <CardContent className="p-6">
                         {sectionHeader(<Building2 className="w-5 h-5 text-primary-600" />, "Basic Information")}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4">
-                            {company.role === 'Tier 1' && (
+                            {(role === 'Tier 1') && (
                                 <>
                                     {dataField("Business Type", details.businessType)}
-                                    {dataField("Industry Type", details.industryType)}
                                     {dataField("Company Type", details.companyType)}
                                     {dataField("Parent Company", details.parentCompanyName)}
                                     {dataField("Employees", details.numberOfEmployees)}
@@ -88,17 +125,17 @@ const CompanyDetailPage = () => {
                                     {dataField("Website", details.companyWebsite)}
                                 </>
                             )}
-                            {company.role === 'Tier 2' && (
+                            {(role === 'Tier 2') && (
                                 <>
-                                    {dataField("Company Name", details.companyName)}
+                                    {dataField("Company Name", name)}
                                     {dataField("Employees", details.numberOfEmployees)}
                                     {dataField("GST Number", details.gstNumber)}
                                     {dataField("Annual Revenue", details.annualRevenue ? `₹${Number(details.annualRevenue).toLocaleString()}` : '-')}
                                 </>
                             )}
-                            {company.role === 'Tier 3' && (
+                            {(role === 'Tier 3') && (
                                 <>
-                                    {dataField("Company Name", details.companyName)}
+                                    {dataField("Company Name", name)}
                                     {dataField("Employees", details.numberOfEmployees)}
                                     {dataField("Tax Number", details.taxNumber)}
                                 </>
@@ -133,28 +170,26 @@ const CompanyDetailPage = () => {
                     <CardContent className="p-6">
                         {sectionHeader(<Shield className="w-5 h-5 text-green-600" />, "Registration Details")}
                         <div className="space-y-6">
-                            {company.role === 'Tier 1' && (
+                            {(role === 'Tier 1') && (
                                 <>
                                     {dataField("PAN Number", details.companyPanNumber)}
                                     {dataField("CIN Number", details.companyCinNumber)}
                                     {dataField("GST Number", details.gstNumber)}
                                     {dataField("Tax Number", details.taxNumber)}
                                     {dataField("Registration Date", details.registrationDate)}
-                                    {dataField("Expiry Date", details.expiryDate)}
+                                    {dataField("Authorised Capital", details.authorisedCapital ? `₹${Number(details.authorisedCapital).toLocaleString()}` : '-')}
                                 </>
                             )}
-                            {company.role === 'Tier 2' && (
+                            {(role === 'Tier 2') && (
                                 <>
                                     {dataField("Tax Number", details.taxNumber)}
                                     {dataField("ITR Number", details.itrNumber)}
                                     {dataField("Registration Date", details.registrationDate)}
-                                    {dataField("Expiry Date", details.expiryDate)}
                                 </>
                             )}
-                            {company.role === 'Tier 3' && (
+                            {(role === 'Tier 3') && (
                                 <>
                                     {dataField("Registration Date", details.registrationDate)}
-                                    {dataField("Expiry Date", details.expiryDate)}
                                 </>
                             )}
                         </div>
@@ -162,20 +197,20 @@ const CompanyDetailPage = () => {
                 </Card>
 
                 {/* Financial Info - Tier 1 & 2 */}
-                {(company.role === 'Tier 1' || company.role === 'Tier 2') && (
+                {(role === 'Tier 1' || role === 'Tier 2') && (
                     <Card className="lg:col-span-1">
                         <CardContent className="p-6">
                             {sectionHeader(<PieChart className="w-5 h-5 text-purple-600" />, "Financial Status")}
                             <div className="space-y-6">
-                                {company.role === 'Tier 1' && (
+                                {(role === 'Tier 1') && (
                                     <>
                                         {dataField("Annual Revenue", details.annualRevenue ? `₹${Number(details.annualRevenue).toLocaleString()}` : '-')}
                                         {dataField("Last Year Turnover", details.lastYearTurnover ? `₹${Number(details.lastYearTurnover).toLocaleString()}` : '-')}
                                         {dataField("Paid-up Capital", details.paidUpCapital ? `₹${Number(details.paidUpCapital).toLocaleString()}` : '-')}
-                                        {dataField("Net Worth", details.netWorth ? `₹${Number(details.netWorth).toLocaleString()}` : '-')}
+                                        {dataField("Authorised Capital", details.authorisedCapital ? `₹${Number(details.authorisedCapital).toLocaleString()}` : '-')}
                                     </>
                                 )}
-                                {company.role === 'Tier 2' && (
+                                {(role === 'Tier 2') && (
                                     <>
                                         {dataField("Annual Revenue", details.annualRevenue ? `₹${Number(details.annualRevenue).toLocaleString()}` : '-')}
                                     </>
@@ -186,7 +221,7 @@ const CompanyDetailPage = () => {
                 )}
 
                 {/* Compliance - Tier 1 */}
-                {company.role === 'Tier 1' && (
+                {(role === 'Tier 1') && (
                     <Card className="lg:col-span-1">
                         <CardContent className="p-6">
                             {sectionHeader(<CreditCard className="w-5 h-5 text-orange-600" />, "Compliance & Audit")}
