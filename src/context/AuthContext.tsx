@@ -14,7 +14,7 @@ interface AuthContextType {
   hasPermission: (permission: Permission) => boolean;
   hasAnyPermission: (permissions: Permission[]) => boolean;
   isAtLeast: (role: Role) => boolean;
-  mockLogin: (user: User, token: string) => void;
+  mockLogin: (user: User, token: string, rememberMe?: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -176,11 +176,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return userLevel >= requiredLevel;
   }, [user]);
 
-  const mockLogin = useCallback((userData: User, accessToken: string) => {
+  const mockLogin = useCallback((userData: User, accessToken: string, rememberMe: boolean = true) => {
     setUser(userData);
     setToken(accessToken);
-    localStorage.setItem('token', accessToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    const storage = rememberMe ? localStorage : sessionStorage;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    storage.setItem('token', accessToken);
+    storage.setItem('user', JSON.stringify(userData));
   }, []);
 
   const value = {
