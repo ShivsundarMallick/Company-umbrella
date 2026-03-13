@@ -15,7 +15,7 @@ interface AnalyticsData {
     growth: number;
   };
   content: {
-    conformation: { total: number; published: number; views: number };
+    post: { total: number; published: number; views: number };
     Reviews: { total: number; published: number; enrollments: number };
     resources: { total: number; published: number; downloads: number };
   };
@@ -35,7 +35,7 @@ interface AnalyticsData {
 const defaultData: AnalyticsData = {
   users: { total: 0, new: 0, active: 0, growth: 0 },
   content: {
-    conformation: { total: 0, published: 0, views: 0 },
+    post: { total: 0, published: 0, views: 0 },
     Reviews: { total: 0, published: 0, enrollments: 0 },
     resources: { total: 0, published: 0, downloads: 0 },
   },
@@ -60,7 +60,7 @@ export default function AnalyticsPage() {
         const responseData = response.data as any;
         const stats = responseData.stats || responseData;
         const users = stats.users || {};
-        const conformation = stats.conformation || {};
+        const post = stats.post || {};
         const Reviews = stats.Reviews || {};
         const resources = stats.resources || {};
         const revenue = stats.revenue || {};
@@ -74,10 +74,10 @@ export default function AnalyticsPage() {
             growth: 12, // Placeholder - could calculate from historical data
           },
           content: {
-            conformation: {
-              total: conformation.total || 0,
-              published: conformation.published || 0,
-              views: conformation.views || 0,
+            post: {
+              total: post.total || 0,
+              published: post.published || 0,
+              views: post.views || 0,
             },
             Reviews: {
               total: Reviews.total || 0,
@@ -239,24 +239,24 @@ export default function AnalyticsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-500" />
-                conformation
+                post
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Total</span>
-                  <span className="font-semibold">{data.content.conformation.total}</span>
+                  <span className="font-semibold">{data.content.post.total}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Published</span>
-                  <span className="font-semibold">{data.content.conformation.published}</span>
+                  <span className="font-semibold">{data.content.post.published}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Total Views</span>
                   <span className="font-semibold flex items-center gap-1">
                     <Eye className="w-4 h-4" />
-                    {data.content.conformation.views.toLocaleString()}
+                    {data.content.post.views.toLocaleString()}
                   </span>
                 </div>
               </div>

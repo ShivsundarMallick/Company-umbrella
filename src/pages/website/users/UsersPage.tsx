@@ -5,12 +5,9 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
   Modal, ModalFooter
 } from '../../../components/ui';
-import { usersService } from '../../../services';
+import { companiesService } from '../../../services';
 import type { User } from '../../../types';
 import { format } from 'date-fns';
-import { tier1MockCompanies } from './Tier1MockData';
-import { tier2MockCompanies } from './Tier2MockData';
-import { tier3MockCompanies } from './Tier3MockData';
 import { useNavigate } from 'react-router-dom';
 
 const tierOptions = [
@@ -49,36 +46,31 @@ export default function UsersPage() {
   }, [search, tierFilter]);
 
   const fetchUsers = async () => {
-    let data: any[] = [];
     try {
-      const response = await usersService.getAll({ search, tier: tierFilter });
-      data = Array.isArray(response.data) ? response.data : [];
+      const response = await companiesService.getAll({ search, tier: tierFilter });
+      const apiCompanies = Array.isArray(response.data) ? response.data : [];
+      
+      const mapped = apiCompanies.map((c: any) => ({
+        _id: c._id,
+        name: c.companyData?.companyName || 'Unknown',
+        email: c.companyData?.officialCompanyEmail || 'No email',
+        role: c.tier,
+        isActive: c.status === 'active' || c.status === 'registered',
+        createdAt: c.createdAt
+      }));
+
+      setUsers(mapped);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Failed to fetch companies:', error);
+      setUsers([]);
     } finally {
-      // Inject mock data if Tier 1, 2, 3 is selected or if no filter but for prototype simplicity
-      let allMocks = [];
-      if (tierFilter === 'Tier 1' || (!tierFilter && !search)) allMocks.push(...tier1MockCompanies);
-      if (tierFilter === 'Tier 2' || (!tierFilter && !search)) allMocks.push(...tier2MockCompanies);
-      if (tierFilter === 'Tier 3' || (!tierFilter && !search)) allMocks.push(...tier3MockCompanies);
-
-      if (allMocks.length > 0) {
-        // Filter mock data if search is present
-        const filteredMock = allMocks.filter(c =>
-          c.name.toLowerCase().includes(search.toLowerCase()) ||
-          c.email.toLowerCase().includes(search.toLowerCase())
-        );
-        data = [...filteredMock, ...data];
-      }
-
-      setUsers(data);
       setLoading(false);
     }
   };
 
   const handleToggleStatus = async (user: User) => {
     try {
-      await usersService.toggleStatus(user._id);
+      await companiesService.toggleStatus(user._id);
       fetchUsers();
     } catch (error) {
       console.error('Failed to toggle status:', error);
@@ -88,7 +80,7 @@ export default function UsersPage() {
   const handleUpdateTier = async () => {
     if (!tierModal.user) return;
     try {
-      await usersService.updateRole(tierModal.user._id, tierModal.newTier);
+      await companiesService.updateRole(tierModal.user._id, tierModal.newTier);
       setTierModal({ open: false, user: null, newTier: '' });
       fetchUsers();
     } catch (error) {
@@ -99,7 +91,7 @@ export default function UsersPage() {
   const handleDelete = async () => {
     if (!deleteModal.user) return;
     try {
-      await usersService.delete(deleteModal.user._id);
+      await companiesService.delete(deleteModal.user._id);
       setDeleteModal({ open: false, user: null });
       fetchUsers();
     } catch (error) {

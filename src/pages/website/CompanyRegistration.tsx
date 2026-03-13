@@ -1,124 +1,88 @@
 import { useState } from 'react';
 import StepIndicator from '../../components/registration/StepIndicator';
 import TierSelector from '../../components/registration/TierSelector';
-import Tier1Form from '../../components/registration/Tier1Form';
-import Tier2Form from '../../components/registration/Tier2Form';
-import Tier3Form from '../../components/registration/Tier3Form';
+import UnifiedCompanyForm from '../../components/registration/UnifiedCompanyForm';
 import ReviewSubmit from '../../components/registration/ReviewSubmit';
 import './css/CompanyRegistration.css';
+import { API_BASE_URL } from '../../config';
 
 const CompanyRegistration = () => {
   const [currentStep, setCurrentStep] = useState(2); // Start at step 2 (Select Tier)
   const [selectedTier, setSelectedTier] = useState('');
   const [formData, setFormData] = useState({});
-  const [tier1SectionStep, setTier1SectionStep] = useState(1);
-  const [tier2SectionStep, setTier2SectionStep] = useState(1);
-  const [tier3SectionStep, setTier3SectionStep] = useState(1);
+  const [sectionStep, setSectionStep] = useState(1);
 
-  const tierSectionFields = {
-    'Tier 1': {
-      1: [
-        'companyName',
-        'businessType',
-        'industryType',
-        'companyType',
-        'parentCompanyName',
-        'numberOfEmployees',
-        'numberOfBranches',
-        'headOfficeLocation',
-        'officialCompanyEmail',
-        'companyContactNumber',
-        'companyWebsite'
-      ],
-      2: [
-        'companyPanNumber',
-        'companyCinNumber',
-        'gstNumber',
-        'taxNumber',
-        'itrNumber',
-        'registrationDate',
-        'expiryDate'
-      ],
-      3: [
-        'annualRevenue',
-        'paidUpCapital',
-        'netWorth',
-        'lastYearTurnover'
-      ],
-      4: [
-        'complianceOfficerName',
-        'complianceOfficerEmail',
-        'complianceOfficerPhone',
-        'auditFirmName',
-        'lastAuditDate'
-      ]
-    },
-    'Tier 2': {
-      1: [
-        'companyName',
-        'numberOfEmployees',
-        'gstNumber',
-        'annualRevenue'
-      ],
-      2: [
-        'taxNumber',
-        'itrNumber',
-        'registrationDate',
-        'expiryDate'
-      ]
-    },
-    'Tier 3': {
-      1: [
-        'companyName',
-        'numberOfEmployees',
-        'taxNumber'
-      ],
-      2: [
-        'registrationDate',
-        'expiryDate'
-      ]
-    }
+  const unifiedSections = {
+    1: [
+      'companyName',
+      'businessType',
+      'companyType',
+      'parentCompanyName',
+      'numberOfEmployees',
+      'numberOfBranches',
+      'headOfficeLocation',
+      'officialCompanyEmail',
+      'companyContactNumber',
+      'companyWebsite'
+    ],
+    2: [
+      'companyPanNumber',
+      'companyCinNumber',
+      'gstNumber',
+      'taxNumber',
+      'itrNumber',
+      'registrationDate'
+    ],
+    3: [
+      'annualRevenue',
+      'paidUpCapital',
+      'authorisedCapital',
+      'lastYearTurnover'
+    ],
+    4: [
+      'complianceOfficerName',
+      'complianceOfficerEmail',
+      'complianceOfficerPhone',
+      'auditFirmName',
+      'lastAuditDate'
+    ]
   };
 
   const handleTierSelect = (tier: any) => {
     setSelectedTier(tier);
     setFormData({});
-    setTier1SectionStep(1);
-    setTier2SectionStep(1);
-    setTier3SectionStep(1);
+    setSectionStep(1);
   };
 
   const handleFormChange = (nextData: any) => {
     setFormData(nextData);
   };
 
-  const getCurrentTierSection = () => {
-    if (selectedTier === 'Tier 1') return tier1SectionStep;
-    if (selectedTier === 'Tier 2') return tier2SectionStep;
-    if (selectedTier === 'Tier 3') return tier3SectionStep;
-    return 1;
-  };
+  const handleFinalSubmit = async (data: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/companies/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-  const setCurrentTierSection = (nextSection: any) => {
-    if (selectedTier === 'Tier 1') setTier1SectionStep(nextSection);
-    if (selectedTier === 'Tier 2') setTier2SectionStep(nextSection);
-    if (selectedTier === 'Tier 3') setTier3SectionStep(nextSection);
-  };
+      if (!response.ok) throw new Error('Registration failed');
 
-  const handleFinalSubmit = (data: any) => {
-    console.log('Final submission:', data);
-    alert('Registration submitted successfully!');
-    // Here you would typically send data to backend
+      alert('Registration submitted successfully!');
+      window.location.href = '/website/uploads';
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+    }
   };
 
   const handleNext = () => {
     if (currentStep === 2 && selectedTier) {
       setCurrentStep(3);
     } else if (currentStep === 3) {
-      const sectionConfig: any = tierSectionFields[selectedTier as keyof typeof tierSectionFields] || {};
-      const currentTierSection = getCurrentTierSection();
-      const sectionFields = sectionConfig[currentTierSection] || [];
-      const totalSections = Object.keys(sectionConfig).length;
+      const sectionFields = (unifiedSections as any)[sectionStep] || [];
+      const totalSections = Object.keys(unifiedSections).length;
 
       if (sectionFields.length > 0) {
         const isSectionComplete = sectionFields.every(
@@ -130,63 +94,14 @@ const CompanyRegistration = () => {
           return;
         }
 
-        if (currentTierSection < totalSections) {
-          setCurrentTierSection(currentTierSection + 1);
+        if (sectionStep < totalSections) {
+          setSectionStep(sectionStep + 1);
           return;
         }
       }
 
-      const requiredFieldsByTier: any = {
-        'Tier 1': [
-          'companyName',
-          'numberOfEmployees',
-          'taxNumber',
-          'companyPanNumber',
-          'companyCinNumber',
-          'itrNumber',
-          'gstNumber',
-          'annualRevenue',
-          'businessType',
-          'industryType',
-          'companyType',
-          'parentCompanyName',
-          'numberOfBranches',
-          'officialCompanyEmail',
-          'companyContactNumber',
-          'companyWebsite',
-          'headOfficeLocation',
-          'complianceOfficerName',
-          'complianceOfficerEmail',
-          'complianceOfficerPhone',
-          'auditFirmName',
-          'lastAuditDate',
-          'paidUpCapital',
-          'netWorth',
-          'lastYearTurnover',
-          'registrationDate',
-          'expiryDate'
-        ],
-        'Tier 2': [
-          'companyName',
-          'numberOfEmployees',
-          'taxNumber',
-          'itrNumber',
-          'gstNumber',
-          'annualRevenue',
-          'registrationDate',
-          'expiryDate'
-        ],
-        'Tier 3': [
-          'companyName',
-          'numberOfEmployees',
-          'taxNumber',
-          'registrationDate',
-          'expiryDate'
-        ]
-      };
-
-      const requiredFields = requiredFieldsByTier[selectedTier as keyof typeof requiredFieldsByTier] || [];
-      const isComplete = requiredFields.every(
+      const allRequiredFields = Object.values(unifiedSections).flat();
+      const isComplete = allRequiredFields.every(
         (field: any) => String((formData as any)[field] ?? '').trim() !== ''
       );
 
@@ -201,9 +116,8 @@ const CompanyRegistration = () => {
 
   const handleBack = () => {
     if (currentStep === 3) {
-      const currentTierSection = getCurrentTierSection();
-      if (currentTierSection > 1) {
-        setCurrentTierSection(currentTierSection - 1);
+      if (sectionStep > 1) {
+        setSectionStep(sectionStep - 1);
         return;
       }
     }
@@ -218,29 +132,12 @@ const CompanyRegistration = () => {
       case 2:
         return <TierSelector selectedTier={selectedTier} onTierSelect={handleTierSelect} />;
       case 3:
-        if (selectedTier === 'Tier 1') {
-          return (
-            <Tier1Form
-              formData={formData}
-              onFormChange={handleFormChange}
-              activeSection={tier1SectionStep}
-            />
-          );
-        }
-        if (selectedTier === 'Tier 2') {
-          return (
-            <Tier2Form
-              formData={formData}
-              onFormChange={handleFormChange}
-              activeSection={tier2SectionStep}
-            />
-          );
-        }
         return (
-          <Tier3Form
+          <UnifiedCompanyForm
             formData={formData}
             onFormChange={handleFormChange}
-            activeSection={tier3SectionStep}
+            activeSection={sectionStep}
+            tier={selectedTier}
           />
         );
       case 4:
@@ -253,10 +150,8 @@ const CompanyRegistration = () => {
   const isNextDisabled = () => {
     if (currentStep === 2) return !selectedTier;
     if (currentStep === 3) {
-      const sectionConfig: any = tierSectionFields[selectedTier as keyof typeof tierSectionFields] || {};
-      const currentTierSection = getCurrentTierSection();
-      const fields = sectionConfig[currentTierSection] || [];
-      return !fields.every(
+      const sectionFields = (unifiedSections as any)[sectionStep] || [];
+      return !sectionFields.every(
         (field: any) => String((formData as any)[field] ?? '').trim() !== ''
       );
     }
@@ -288,10 +183,9 @@ const CompanyRegistration = () => {
             >
               {currentStep === 3
                 ? (() => {
-                  const currentTierSection = getCurrentTierSection();
-                  const totalSections = Object.keys(tierSectionFields[selectedTier as keyof typeof tierSectionFields] || {}).length;
-                  if (currentTierSection < totalSections) {
-                    return `Next Section (${currentTierSection + 1}/${totalSections})`;
+                  const totalSections = Object.keys(unifiedSections).length;
+                  if (sectionStep < totalSections) {
+                    return `Next Section (${sectionStep + 1}/${totalSections})`;
                   }
                   return 'Review';
                 })()

@@ -1,0 +1,23 @@
+const mongoose = require("mongoose");
+
+const CompanySchema = new mongoose.Schema(
+    {
+        tier: {
+            type: String,
+            required: true,
+            enum: ["Tier 1", "Tier 2", "Tier 3"]
+        },
+        companyData: {
+            type: mongoose.Schema.Types.Mixed,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ["registered", "active", "inactive"],
+            default: "registered"
+        }
+    },
+    { timestamps: true }
+);
+
+module.exports = mongoose.model("Company", CompanySchema);

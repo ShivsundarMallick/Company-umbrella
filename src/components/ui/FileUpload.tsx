@@ -14,7 +14,8 @@ interface FileUploadProps {
   previewType?: 'image' | 'file';
   error?: string;
   disabled?: boolean;
-  hint?: string; // Additional hint text for size/resolution recommendations
+  hint?: string;
+  onFileSelect?: (file: File) => void;
 }
 
 export default function FileUpload({
@@ -30,6 +31,7 @@ export default function FileUpload({
   error,
   disabled = false,
   hint,
+  onFileSelect,
 }: FileUploadProps) {
   const [mode, setMode] = useState<'url' | 'upload'>('url');
   const [uploading, setUploading] = useState(false);
@@ -58,10 +60,16 @@ export default function FileUpload({
     setUploadSuccess(false);
 
     try {
-      const result = await uploadService.uploadFile(file, folder);
-      onChange(result.url);
-      setUploadSuccess(true);
-      setTimeout(() => setUploadSuccess(false), 3000);
+      if (onFileSelect) {
+        onFileSelect(file);
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 3000);
+      } else {
+        const result = await uploadService.uploadFile(file, folder);
+        onChange(result.url);
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 3000);
+      }
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed');
     } finally {

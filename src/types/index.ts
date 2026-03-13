@@ -20,7 +20,7 @@ export type Permission =
   | 'view_free_content' | 'view_premium_content'
   | 'like_content' | 'save_content'
   | 'enroll_free_Review' | 'enroll_paid_Review' | 'access_enrolled_Reviews'
-  | 'create_conformation' | 'edit_conformation' | 'delete_conformation' | 'publish_conformation'
+  | 'create_post' | 'edit_post' | 'delete_post' | 'publish_post'
   | 'create_Review' | 'edit_Review' | 'delete_Review' | 'publish_Review'
   | 'create_article' | 'edit_article' | 'delete_article' | 'publish_article'
   | 'view_users' | 'edit_user' | 'delete_user' | 'change_user_role' | 'ban_user'
@@ -37,7 +37,7 @@ export interface AuthState {
 }
 
 // Content Types
-export interface conformation {
+export interface post {
   _id: string;
   title: string;
   slug: string;
@@ -177,8 +177,8 @@ export interface ListParams {
 // Stats Types
 export interface DashboardStats {
   users: { total: number; new: number; change?: number };
-  conformation: { total: number; published: number; views?: number; change?: number };
-  /** Tracker dashboard uses "articles" (same shape as conformation when provided by API). */
+  post: { total: number; published: number; views?: number; change?: number };
+  /** Tracker dashboard uses "articles" (same shape as post when provided by API). */
   articles?: { total: number; published: number; views?: number; change?: number };
   Reviews: { total: number; published: number; change?: number };
   revenue: { total: number; monthly: number; change?: number };

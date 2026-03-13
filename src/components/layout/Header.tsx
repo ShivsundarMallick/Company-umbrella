@@ -12,7 +12,7 @@ interface HeaderProps {
 const breadcrumbLabels: Record<string, string> = {
   website: 'Website',
 
-  conformation: 'conformation',
+  post: 'post',
   Reviews: 'Reviews',
   resources: 'Resources',
   testimonials: 'Testimonials',
@@ -179,7 +179,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search conformation, Reviews, users..."
+                  placeholder="Search post, Reviews, users..."
                   className="flex-1 text-sm text-gray-900 placeholder-gray-400 outline-none"
                 />
                 <button
@@ -202,7 +202,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
                       </p>
                       <div className="space-y-1">
                         {[
-                          { label: 'Create conformation', path: '/website/conformation/new' },
+                          { label: 'Create post', path: '/website/post/new' },
                           { label: 'View Users', path: '/website/users' },
                           { label: 'Contact Messages', path: '/website/contacts' },
                         ].map((link) => (

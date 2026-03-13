@@ -129,7 +129,7 @@ export default function ReviewsPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${activeTab === tab
-              ? 'bg-primary-600 text-white'
+              ? 'bg-primary text-primary-foreground'
               : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-r last:border-r-0 border-gray-200'
               }`}
           >
