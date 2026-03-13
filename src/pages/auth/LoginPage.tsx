@@ -1,13 +1,34 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import './LoginPage.css';
 
+type AllowedBackendRole = 'company_admin' | 'company_secretary';
+
+const ALLOWED_BACKEND_ROLES: AllowedBackendRole[] = ['company_admin', 'company_secretary'];
+
+const isAllowedBackendRole = (role: unknown): role is AllowedBackendRole =>
+  typeof role === 'string' && ALLOWED_BACKEND_ROLES.includes(role as AllowedBackendRole);
+
+const mapBackendRoleToAppRole = (role: AllowedBackendRole) =>
+  role === 'company_admin' ? 'admin' : 'manager';
+
+const generateCaptchaString = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+};
+
 const LoginPage = () => {
   const { isAuthenticated, mockLogin } = useAuth();
-  const [authMode, setAuthMode] = useState('signin');
   const [email, setEmail] = useState('');
-  const [designation, setDesignation] = useState('');
+  const [password, setPassword] = useState('');
+  const [captchaInput, setCaptchaInput] = useState('');
+  const [generatedCaptcha, setGeneratedCaptcha] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [authMessage, setAuthMessage] = useState('');
+  const [authMessageType, setAuthMessageType] = useState<'success' | 'error' | ''>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
@@ -23,23 +44,60 @@ const LoginPage = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    setGeneratedCaptcha(generateCaptchaString());
+  }, []);
+
+  const refreshCaptcha = () => {
+    setGeneratedCaptcha(generateCaptchaString());
+    setCaptchaInput('');
+  };
+
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (authMode === 'signup') {
-      if (!email || !designation) return;
-      setOtpValues(['', '', '', '', '', '']);
-      setOtpMessage('');
-      setOtpMessageType('');
-      setIsOtpModalOpen(true);
+    if (!email || !password || !captchaInput) {
+      setAuthMessage('Email, password, and captcha are required.');
+      setAuthMessageType('error');
+      return;
+    }
+    if (captchaInput.trim() !== generatedCaptcha) {
+      setAuthMessage('Invalid captcha');
+      setAuthMessageType('error');
       return;
     }
 
-    if (!email) return;
-    setOtpValues(['', '', '', '', '', '']);
-    setOtpMessage('');
-    setOtpMessageType('');
-    setIsOtpModalOpen(true);
+    const submitLogin = async () => {
+      try {
+        setIsSubmitting(true);
+        setAuthMessage('');
+        setAuthMessageType('');
+
+        await axios.post('http://localhost:5000/api/auth/login', {
+          email,
+          password,
+          captcha: captchaInput,
+        });
+
+        setOtpEmail(email);
+        setAuthMessage('OTP sent to your email');
+        setAuthMessageType('success');
+        setOtpValues(['', '', '', '', '', '']);
+        setOtpMessage('');
+        setOtpMessageType('');
+        setIsOtpModalOpen(true);
+      } catch (error: any) {
+        const apiErrorMessage =
+          error?.response?.data?.message || 'Unable to send OTP. Please try again.';
+        setAuthMessage(apiErrorMessage);
+        setAuthMessageType('error');
+        refreshCaptcha();
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    submitLogin();
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -61,30 +119,65 @@ const LoginPage = () => {
 
   const handleVerifyOtp = async () => {
     const enteredOtp = otpValues.join('');
-    if (enteredOtp === '123456') {
-      // Prototype mode: force authentication state update
-      mockLogin(
-        { id: 'proto-1', name: 'Prototype User', email, role: 'admin' } as any,
-        'prototype-token'
-      );
+    if (enteredOtp.length !== 6) {
+      setOtpMessage('Please enter a valid 6 digit OTP.');
+      setOtpMessageType('error');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/verify-otp', {
+        email: otpEmail || email,
+        otp: enteredOtp,
+      });
+
+      const responseData = response?.data || {};
+      const responsePayload = responseData?.data || responseData;
+      const backendRole = responsePayload?.role || responsePayload?.user?.role;
+
+      if (!isAllowedBackendRole(backendRole)) {
+        setOtpMessage('Only Company Admin and Company Secretary are allowed to login.');
+        setOtpMessageType('error');
+        return;
+      }
+
+      const mappedRole = mapBackendRoleToAppRole(backendRole);
+      const token = responsePayload?.token;
+
+      if (!token) {
+        setOtpMessage('Invalid server response. Please try again.');
+        setOtpMessageType('error');
+        return;
+      }
+
+      const userForSession = {
+        _id: responsePayload?.user?._id || email,
+        id: responsePayload?.user?._id || email,
+        email: responsePayload?.user?.email || email,
+        name: responsePayload?.user?.name || email.split('@')[0] || 'User',
+        role: mappedRole,
+      };
+
+      mockLogin(userForSession as any, token, rememberMe);
 
       setOtpMessage('OTP verified successfully. Redirecting...');
       setOtpMessageType('success');
       setTimeout(() => {
         setIsOtpModalOpen(false);
         setOtpValues(['', '', '', '', '', '']);
+        setOtpEmail('');
         navigate('/website/dashboard');
       }, 350);
-      return;
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Invalid OTP. Please try again.';
+      setOtpMessage(message);
+      setOtpMessageType('error');
     }
-
-    setOtpMessage('Invalid OTP. Please try again.');
-    setOtpMessageType('error');
   };
 
   const handleResendOtp = () => {
     setOtpValues(['', '', '', '', '', '']);
-    setOtpMessage('OTP resent. Use 123456 for this prototype.');
+    setOtpMessage('Please click Send OTP again to get a new code.');
     setOtpMessageType('info');
     otpInputsRef.current[0]?.focus();
   };
@@ -103,24 +196,7 @@ const LoginPage = () => {
             </svg>
           </div>
           <h1>Company Umbrella</h1>
-          <p>{authMode === 'signin' ? 'Sign in to continue' : 'Create your account'}</p>
-        </div>
-
-        <div className="auth-switch" role="tablist" aria-label="Authentication mode">
-          <button
-            type="button"
-            className={`auth-switch-btn ${authMode === 'signin' ? 'active' : ''}`}
-            onClick={() => setAuthMode('signin')}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            className={`auth-switch-btn ${authMode === 'signup' ? 'active' : ''}`}
-            onClick={() => setAuthMode('signup')}
-          >
-            Sign Up
-          </button>
+          <p>Sign in to continue</p>
         </div>
 
         <form className="login-form" onSubmit={handleAuthSubmit}>
@@ -144,60 +220,112 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {authMode === 'signup' && (
-            <div className="login-form-group">
-              <label htmlFor="designation">Designation</label>
-              <div className="login-input-wrap">
-                <span className="login-input-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="7.5" r="3" stroke="currentColor" strokeWidth="1.7" />
-                    <path d="M5 19C5.7 16.2 8.1 14.6 12 14.6C15.9 14.6 18.3 16.2 19 19" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                  </svg>
-                </span>
-                <input
-                  id="designation"
-                  type="text"
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
-                  required
-                  placeholder="Enter your designation"
-                />
+          <div className="login-form-group">
+            <label htmlFor="password">Password</label>
+            <div className="login-input-wrap">
+              <span className="login-input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                  <path d="M8 10V8C8 5.79 9.79 4 12 4C14.21 4 16 5.79 16 8V10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                </svg>
+              </span>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Enter your password"
+              />
+            </div>
+          </div>
+
+          <div className="login-form-group">
+            <label htmlFor="captcha">Captcha</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                aria-hidden="true"
+                style={{
+                  border: '1px solid var(--ds-border)',
+                  borderRadius: 'var(--ds-input-radius)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontWeight: 700,
+                  letterSpacing: '1.2px',
+                  color: '#1e3a8a',
+                  background: '#f8fbff',
+                  userSelect: 'none',
+                  minHeight: '46px',
+                  minWidth: '120px',
+                  padding: '0 12px',
+                }}
+              >
+                {generatedCaptcha}
               </div>
+              <button
+                type="button"
+                onClick={refreshCaptcha}
+                aria-label="Refresh captcha"
+                style={{
+                  border: '1px solid var(--ds-border)',
+                  borderRadius: 'var(--ds-input-radius)',
+                  background: '#ffffff',
+                  minHeight: '46px',
+                  minWidth: '46px',
+                  cursor: 'pointer',
+                }}
+              >
+                Refresh
+              </button>
             </div>
-          )}
-
-          {authMode === 'signin' ? (
-            <div className="login-options">
-              <label className="remember-me">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                <span>Remember Me</span>
-              </label>
-              <a href="#" className="forgot-password" onClick={(e) => e.preventDefault()}>
-                Forgot Password?
-              </a>
+            <label htmlFor="captcha" style={{ marginTop: '10px' }}>
+              Enter Captcha
+            </label>
+            <div className="login-input-wrap">
+              <input
+                id="captcha"
+                type="text"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                required
+                placeholder="Enter captcha"
+                style={{ padding: '12px 14px' }}
+              />
             </div>
-          ) : (
-            <p className="signup-helper">Prototype mode: OTP is fixed to 123456.</p>
-          )}
+          </div>
 
-          <button className="login-submit-button ds-btn-primary" type="submit">
-            {authMode === 'signin' ? 'Send OTP' : 'Create Account'}
+          <div className="login-options">
+            <label className="remember-me">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span>Remember Me</span>
+            </label>
+            <a href="#" className="forgot-password" onClick={(e) => e.preventDefault()}>
+              Forgot Password?
+            </a>
+          </div>
+
+          <button
+            className="login-submit-button ds-btn-primary"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Sending...' : 'Send OTP'}
           </button>
-
-          <p className="auth-footer">
-            {authMode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <button
-              type="button"
-              className="auth-footer-link"
-              onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+          {authMessage && (
+            <p
+              className="signup-helper"
+              style={{
+                color: authMessageType === 'error' ? '#b91c1c' : '#166534',
+                marginTop: '2px',
+              }}
             >
-              {authMode === 'signin' ? 'Sign Up' : 'Sign In'}
-            </button>
-          </p>
+              {authMessage}
+            </p>
+          )}
         </form>
       </div>
 
