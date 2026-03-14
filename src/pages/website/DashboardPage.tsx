@@ -6,6 +6,7 @@ import {
   Calendar, Clock, BarChart3, Wallet, BadgeDollarSign, Bell, Send
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui';
+import { companiesService } from '../../services';
 // import { usersService } from '../../services';
 // import type { DashboardStats } from '../../types';
 import {
@@ -138,9 +139,12 @@ export default function DashboardPage() {
   const fetchStats = async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
     try {
-      // Use mock data directly
+      const response = await companiesService.getAll();
+      const actualCompanyCount = Array.isArray(response.data) ? response.data.length : 0;
+      
+      // Use mock data directly except for company total
       setStats({
-        users: { total: 121, new: 5, change: 12 },
+        users: { total: actualCompanyCount, new: 5, change: 12 },
         post: { published: '32.3L', total: 45, change: 8, views: 1240 },
         Reviews: { published: '12L', total: 15, change: 4 },
         resources: { total: 16, sent: 80, change: 2 },
@@ -149,6 +153,8 @@ export default function DashboardPage() {
         contacts: { pending: 12 },
         jobs: { applications: 8 },
       });
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -198,7 +204,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatCard
           title="Total Companies Registered"
-          value={121}
+          value={stats?.users?.total || 0}
           change={stats?.users?.change}
           icon={Users}
           color="blue"

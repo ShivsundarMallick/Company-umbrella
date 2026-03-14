@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-const express = require('express');
-const { login, verifyOtp } = require('../controllers/authController');
-
-const router = express.Router();
-
-router.post('/login', login);
-router.post('/verify-otp', verifyOtp);
-=======
 const express = require("express");
 const router = express.Router();
+const authController = require("../controllers/authController");
 
 // Mock user for local development
 const MOCK_USER = {
@@ -19,18 +11,13 @@ const MOCK_USER = {
     permissions: ["all"]
 };
 
-// Login
-router.post("/login", (req, res) => {
-    res.json({
-        success: true,
-        data: {
-            user: MOCK_USER,
-            accessToken: "mock-token-" + Date.now()
-        }
-    });
-});
+// Login - using controller logic for OTP flow
+router.post("/login", authController.login);
 
-// Register
+// Verify OTP - using controller logic
+router.post("/verify-otp", authController.verifyOtp);
+
+// Mock Register
 router.post("/register", (req, res) => {
     res.json({
         success: true,
@@ -41,7 +28,7 @@ router.post("/register", (req, res) => {
     });
 });
 
-// Profile
+// Profile - satisfying frontend user initialization
 router.get("/profile", (req, res) => {
     res.json({
         success: true,
@@ -55,6 +42,5 @@ router.get("/profile", (req, res) => {
 router.post("/logout", (req, res) => {
     res.json({ success: true });
 });
->>>>>>> da33c31 (added companies)
 
 module.exports = router;

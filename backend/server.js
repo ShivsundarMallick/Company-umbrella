@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -6,6 +6,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const companyRoutes = require("./routes/companyRoutes");
 const documentRoutes = require("./routes/documentRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/companies", companyRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", authRoutes);
 
 app.get("/", (req, res) => {
     res.send("Compliance backend running");
