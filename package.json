@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev:server": "nodemon backend/server.js",
+    "start": "node backend2/server.js",
+    "dev:server": "nodemon backend2/server.js",
     "dev:client": "vite",
     "dev": "npm run dev:client & npm run dev:server",
     "build": "tsc -b && vite build",
