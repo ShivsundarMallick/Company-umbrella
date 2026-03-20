@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ds-font: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --ds-text: #0f172a;
+  --ds-muted: #64748b;
+  --ds-page-bg: linear-gradient(135deg, #eef2f7, #dfe6f1);
+  --ds-primary: linear-gradient(135deg, #3b82f6, #2563eb);
+  --ds-success: linear-gradient(135deg, #22c55e, #16a34a);
+  --ds-card-bg: #ffffff;
+  --ds-card-radius: 16px;
+  --ds-control-radius: 12px;
+  --ds-input-radius: 10px;
+  --ds-border: #d7e0ef;
+  --ds-focus: rgba(37, 99, 235, 0.16);
+  --ds-shadow-card: 0 24px 56px rgba(18, 33, 63, 0.16);
+  --ds-shadow-primary: 0 12px 22px rgba(37, 99, 235, 0.28);
+  --ds-transition: 0.2s ease;
+}
+
+body {
+  font-family: var(--ds-font);
+  color: var(--ds-text);
+}
+
+.ds-page-shell {
+  background: var(--ds-page-bg);
+}
+
+.ds-card {
+  background: var(--ds-card-bg);
+  border-radius: var(--ds-card-radius);
+  box-shadow: var(--ds-shadow-card);
+}
+
+.ds-card-wide {
+  max-width: 900px;
+  width: min(900px, 100%);
+  padding: clamp(20px, 3.2vw, 40px);
+}
+
+.ds-btn-primary {
+  color: #ffffff;
+  border: 0;
+  border-radius: var(--ds-control-radius);
+  background: var(--ds-primary);
+  box-shadow: var(--ds-shadow-primary);
+  transition: transform var(--ds-transition), box-shadow var(--ds-transition), filter var(--ds-transition);
+}
+
+.ds-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.ds-btn-secondary {
+  border-radius: var(--ds-control-radius);
+  border: 1px solid #b6c5e2;
+  background: #ffffff;
+  color: #1d4ed8;
+  transition: transform var(--ds-transition), box-shadow var(--ds-transition), border-color var(--ds-transition);
+}
+
+.ds-btn-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: #2563eb;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.12);
+}
+
+.ds-input {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-input-radius);
+  transition: border-color var(--ds-transition), box-shadow var(--ds-transition);
+}
+
+.ds-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px var(--ds-focus);
+}

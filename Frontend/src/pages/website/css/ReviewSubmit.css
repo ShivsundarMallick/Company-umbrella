@@ -1,0 +1,118 @@
+.review-submit {
+  text-align: center;
+}
+
+.review-submit h3 {
+  margin-bottom: 26px;
+  color: var(--ds-text);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.review-content {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.review-section {
+  background: linear-gradient(160deg, #fbfdff, #f4f7fc);
+  border: 1px solid #e1e8f4;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+}
+
+.review-section h4 {
+  margin: 0 0 14px;
+  color: #1e3a8a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tier-summary-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.tier-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.tier-summary-card p {
+  margin: 0;
+  color: #475569;
+  font-weight: 600;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid #dde6f5;
+  border-radius: 12px;
+  background-color: #ffffff;
+}
+
+.label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.value {
+  color: var(--ds-text);
+  font-weight: 700;
+}
+
+.submit-section {
+  margin-top: 8px;
+}
+
+.submit-button {
+  min-height: 52px;
+  padding: 14px 40px;
+  border: 0;
+  border-radius: var(--ds-control-radius);
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  background: var(--ds-success);
+  box-shadow: 0 12px 22px rgba(22, 163, 74, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(22, 163, 74, 0.32);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+}
