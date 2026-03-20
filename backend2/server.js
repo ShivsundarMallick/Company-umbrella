@@ -27,9 +27,9 @@ app.get("/", (req, res) => {
 
 // routes
 app.use("/api/auth", authRoutes);
+
 app.use("/api/documents", documentRoutes);
 app.use("/api/companies", companyRoutes);
-app.use("/api/users", authRoutes); // Ensure backwards compatibility for /api/users routes if needed like in backend
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

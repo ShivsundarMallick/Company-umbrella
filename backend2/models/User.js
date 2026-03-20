@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { umbrellaDb } = require('../config/db');
+const { complianceDb } = require('../config/db');
 
 const userSchema = new mongoose.Schema(
   {
@@ -46,4 +46,4 @@ userSchema.pre('save', async function preSave(next) {
   }
 });
 
-module.exports = umbrellaDb.model('User', userSchema);
+module.exports = complianceDb.model('User', userSchema);
