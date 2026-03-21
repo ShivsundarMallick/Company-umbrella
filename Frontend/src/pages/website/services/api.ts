@@ -25,13 +25,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiResponse<unknown>>) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      window.location.href = '/login';
-    }
+    // Temporary frontend-only auth mode:
+    // Do not force logout/redirect on 401 while backend auth is incomplete.
     return Promise.reject(error);
   }
 );
