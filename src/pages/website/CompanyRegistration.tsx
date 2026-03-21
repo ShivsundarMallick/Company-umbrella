@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StepIndicator from '../../components/registration/StepIndicator';
 import TierSelector from '../../components/registration/TierSelector';
 import UnifiedCompanyForm from '../../components/registration/UnifiedCompanyForm';
@@ -7,6 +8,7 @@ import './css/CompanyRegistration.css';
 import { API_BASE_URL } from '../../config';
 
 const CompanyRegistration = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(2); // Start at step 2 (Select Tier)
   const [selectedTier, setSelectedTier] = useState('');
   const [formData, setFormData] = useState({});
@@ -71,7 +73,7 @@ const CompanyRegistration = () => {
       if (!response.ok) throw new Error('Registration failed');
 
       alert('Registration submitted successfully!');
-      window.location.href = '/website/uploads';
+      navigate('/website/uploads');
     } catch (error: any) {
       alert(`Error: ${error.message}`);
     }
