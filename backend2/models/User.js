@@ -1,39 +1,38 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const { complianceDb } = require('../config/db');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      trim: true,
+      trim: true
     },
     password: {
       type: String,
-      required: true,
+      required: true
     },
     role: {
       type: String,
-      enum: ['company_admin', 'company_secretary'],
-      required: true,
+      enum: ["company_admin", "company_secretary"],
+      required: true
     },
     otp: {
       type: String,
-      default: null,
+      default: null
     },
     otpExpire: {
       type: Date,
-      default: null,
-    },
+      default: null
+    }
   },
   { timestamps: true }
 );
 
-userSchema.pre('save', async function preSave(next) {
-  if (!this.isModified('password')) {
+UserSchema.pre("save", async function preSave(next) {
+  if (!this.isModified("password")) {
     return next();
   }
 
@@ -46,4 +45,4 @@ userSchema.pre('save', async function preSave(next) {
   }
 });
 
-module.exports = complianceDb.model('User', userSchema);
+module.exports = UserSchema;

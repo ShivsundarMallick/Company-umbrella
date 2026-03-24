@@ -1,27 +1,33 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const dotenv = require('dotenv');
-const User = require('./models/User');
-const { umbrellaDb } = require('./config/db');
-const path = require('path');
-dotenv.config({ path: path.join(__dirname, '.env') });
+const path = require("path");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: path.join(__dirname, ".env") });
+
+const { complianceDb, User } = require("./models");
+const { waitForConnection } = require("./config/db");
 
 async function resetAdminPassword() {
   try {
-    console.log('resetting password...');
-    const user = await User.findOne({ email: 'admin@company.com' });
+    await waitForConnection(complianceDb, "complianceDb");
+
+    console.log("Resetting password...");
+    const user = await User.findOne({ email: "admin@company.com" });
+
     if (!user) {
-      console.log('admin user not found!');
-      process.exit(1);
+      console.log("Admin user not found.");
+      process.exitCode = 1;
+      return;
     }
-    
-    user.password = 'password123';
+
+    user.password = "password123";
     await user.save();
-    console.log('Password for admin@company.com successfully reset to: password123');
-    process.exit(0);
-  } catch (err) {
-    console.error('Error resetting password: ', err);
-    process.exit(1);
+
+    console.log("Password for admin@company.com reset to password123");
+  } catch (error) {
+    console.error("Error resetting password:", error.message);
+    process.exitCode = 1;
+  } finally {
+    await complianceDb.close();
   }
 }
 

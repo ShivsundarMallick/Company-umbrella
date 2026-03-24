@@ -1,6 +1,6 @@
-﻿const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const { User } = require("../models");
 const { sendOtpEmail } = require("../config/mailer");
 
 const ALLOWED_ROLES = ["company_admin", "company_secretary"];

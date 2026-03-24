@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "seed:documents": "node scripts/seedDocuments.js",
     "seed:user": "node scripts/seedUser.js",
-    "repair:users": "node scripts/repairUsers.js"
+    "repair:users": "node scripts/repairUsers.js",
+    "reminders:run": "node utils/checkExpiry.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -17,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.14"
   }
