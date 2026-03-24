@@ -73,11 +73,45 @@ const LoginPage = () => {
         setAuthMessage('');
         setAuthMessageType('');
 
-        await axios.post('http://localhost:5000/api/auth/login', {
+        const response = await axios.post('http://localhost:5000/api/auth/login', {
           email,
           password,
           captcha: captchaInput,
         });
+
+        const responseData = response?.data || {};
+        const token = responseData?.token;
+        const backendRole = responseData?.role;
+
+        // If token is present, login directly (OTP bypassed)
+        if (token) {
+          if (!isAllowedBackendRole(backendRole)) {
+            setAuthMessage('Only Company Admin and Company Secretary are allowed to login.');
+            setAuthMessageType('error');
+            refreshCaptcha();
+            setIsSubmitting(false);
+            return;
+          }
+
+          const mappedRole = mapBackendRoleToAppRole(backendRole);
+          const userForSession = {
+            _id: responseData?.user?._id || email,
+            id: responseData?.user?._id || email,
+            email: responseData?.user?.email || email,
+            name: responseData?.user?.name || email.split('@')[0] || 'User',
+            role: mappedRole,
+          };
+
+          mockLogin(userForSession as any, token, rememberMe);
+          setAuthMessage('Login successful. Redirecting to dashboard...');
+          setAuthMessageType('success');
+
+          setTimeout(() => {
+            navigate('/website/dashboard');
+          }, 500);
+
+          return;
+        }
 
         setOtpEmail(email);
         setAuthMessage('OTP sent to your email');
