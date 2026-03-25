@@ -25,6 +25,8 @@ jobs:
       - name: Debug trigger info
         run: |
           echo "event_name=${{ github.event_name }}"
+          echo "run_id=${{ github.run_id }}"
+          echo "actor=${{ github.actor }}"
           echo "workflow_run_conclusion=${{ github.event.workflow_run.conclusion }}"
           echo "workflow_run_event=${{ github.event.workflow_run.event }}"
 
