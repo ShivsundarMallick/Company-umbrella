@@ -98,13 +98,6 @@ export const NAVIGATION: Record<string, NavItem[]> = {
       permission: null
     },
 
-    // Reviews
-    {
-      name: 'Reviews',
-      href: '/website/reviews',
-      icon: 'UserStar',
-      permission: PERMISSIONS.CREATE_Review,
-    },
     {
       name: 'Upload',
       href: '/website/uploads',
