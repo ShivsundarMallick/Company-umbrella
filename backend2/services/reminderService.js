@@ -110,17 +110,17 @@ async function runWithConcurrency(items, limit, handler) {
 }
 
 async function processReminderBatch({ startDate, endDate, lastId, config }) {
-  const query = {
+  const reminderQuery = {
     reminderSent: false,
     reminderAttempts: { $lt: config.maxRetryAttempts },
     expiryDate: { $gte: startDate, $lte: endDate }
   };
 
   if (lastId) {
-    query._id = { $gt: lastId };
+    reminderQuery._id = { $gt: lastId };
   }
 
-  const documents = await Document.find(query)
+  const documents = await Document.find(reminderQuery)
     .select("_id companyId categoryId title expiryDate")
     .sort({ _id: 1 })
     .limit(config.batchSize)
