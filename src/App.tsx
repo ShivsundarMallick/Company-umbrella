@@ -47,6 +47,7 @@ import PendingTaxReportPage from './pages/website/reports/PendingTaxReportPage';
 import TaxPaymentHistoryReportPage from './pages/website/reports/TaxPaymentHistoryReportPage';
 import ComplianceStatusReportPage from './pages/website/reports/ComplianceStatusReportPage';
 import CompanyRegistrationReportPage from './pages/website/reports/CompanyRegistrationReportPage';
+import RocMinistryCorporateAffairsReportPage from './pages/website/reports/RocMinistryCorporateAffairsReportPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -162,6 +163,7 @@ function App() {
               <Route path="reports/tax-payment-history" element={<TaxPaymentHistoryReportPage />} />
               <Route path="reports/compliance-status" element={<ComplianceStatusReportPage />} />
               <Route path="reports/company-registration" element={<CompanyRegistrationReportPage />} />
+              <Route path="reports/roc-ministry-corporate-affairs" element={<RocMinistryCorporateAffairsReportPage />} />
 
               <Route path="reviews" element={<ReviewsListPage />} />
               <Route path="reviews/:id" element={<ReviewFormPage />} />
