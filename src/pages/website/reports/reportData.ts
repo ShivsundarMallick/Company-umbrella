@@ -9,7 +9,8 @@ export type ReportCategoryKey =
   | 'gst-filing'
   | 'document-expiry'
   | 'audit'
-  | 'user-activity';
+  | 'user-activity'
+  | 'roc-ministry-corporate-affairs';
 
 export interface ReportRow {
   id: string;
@@ -94,6 +95,12 @@ export const REPORT_CATEGORIES: ReportCategory[] = [
     description: 'Track user actions, modules accessed, and system activity logs.',
     href: '/website/reports/user-activity',
   },
+  {
+    key: 'roc-ministry-corporate-affairs',
+    title: 'ROC Ministry of Corporate Affairs Report',
+    description: 'Track ROC filings and Ministry of Corporate Affairs compliance status.',
+    href: '/website/reports/roc-ministry-corporate-affairs',
+  },
 ];
 
 const sharedRows: ReportRow[] = [
@@ -159,4 +166,5 @@ export const REPORT_DATA: Record<ReportCategoryKey, ReportRow[]> = {
   'document-expiry': sharedRows,
   audit: sharedRows,
   'user-activity': sharedRows,
+  'roc-ministry-corporate-affairs': sharedRows,
 };
