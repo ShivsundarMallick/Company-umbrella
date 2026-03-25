@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend2
+    container_name: backend
+    ports:
+      - "5000:5000"   # ✅ expose backend
+    environment:
+      - MONGO_URI=your_mongo_url
+      - EMAIL_USER=your_email
+      - EMAIL_PASS=your_password
+    restart: always
+
+  frontend:
+    build: ./Frontend
+    container_name: frontend
+    ports:
+      - "3000:80"     # ✅ expose frontend
+    depends_on:
+      - backend
+    restart: always
