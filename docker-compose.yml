@@ -5,9 +5,9 @@ services:
     ports:
       - "5000:5000"   # ✅ expose backend
     environment:
-      - MONGO_URI=your_mongo_url
-      - EMAIL_USER=your_email
-      - EMAIL_PASS=your_password
+      - MONGO_URI=mongodb+srv://Shiv:Cluster7077@companyumbrella.u4k7zxj.mongodb.net/companyDB?retryWrites=true&w=majority
+      - EMAIL_USER=anilkumarjena4323@gmail.com
+      - EMAIL_PASS=koajskcmzappsikh
     restart: always
 
   frontend:
