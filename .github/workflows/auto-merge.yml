@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["CI-CD Pipeline"]
     types: [completed]
+  workflow_dispatch:
 
 permissions:
   pull-requests: write
@@ -14,15 +15,29 @@ jobs:
     name: Auto merge after CI success
     runs-on: ubuntu-latest
     if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request'
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'pull_request'
+      )
 
     steps:
+      - name: Debug trigger info
+        run: |
+          echo "event_name=${{ github.event_name }}"
+          echo "workflow_run_conclusion=${{ github.event.workflow_run.conclusion }}"
+          echo "workflow_run_event=${{ github.event.workflow_run.event }}"
+
       - name: Squash merge PR
         uses: actions/github-script@v7
         with:
           github-token: ${{ github.token }}
           script: |
+            if (context.eventName === "workflow_dispatch") {
+              core.notice("Manual test run completed. Merge logic is skipped for workflow_dispatch.");
+              return;
+            }
+
             const run = context.payload.workflow_run;
             const pr = run.pull_requests?.[0];
 
