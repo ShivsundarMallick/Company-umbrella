@@ -496,5 +496,5 @@ const LoginPage = () => {
     </div>
   );
 };
-
+console.log("CI/CD test working 🚀");
 export default LoginPage;
