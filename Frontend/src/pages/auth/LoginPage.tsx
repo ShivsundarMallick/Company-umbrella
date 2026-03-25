@@ -47,7 +47,6 @@ const LoginPage = () => {
   const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/website/dashboard", { replace: true });
@@ -71,6 +70,7 @@ const LoginPage = () => {
       setAuthMessageType("error");
       return;
     }
+
     if (captchaInput.trim() !== generatedCaptcha) {
       setAuthMessage("Invalid captcha");
       setAuthMessageType("error");
@@ -96,7 +96,6 @@ const LoginPage = () => {
         const token = responseData?.token;
         const backendRole = responseData?.role;
 
-        // If token is present, login directly (OTP bypassed)
         if (token) {
           if (!isAllowedBackendRole(backendRole)) {
             setAuthMessage(
@@ -128,7 +127,6 @@ const LoginPage = () => {
           return;
         }
 
-        // Otherwise, show OTP modal (if OTP endpoint is still in use)
         setOtpEmail(email);
         setAuthMessage("OTP sent to your email");
         setAuthMessageType("success");
@@ -215,9 +213,9 @@ const LoginPage = () => {
       };
 
       mockLogin(userForSession as any, token, rememberMe);
-
       setOtpMessage("OTP verified successfully. Redirecting...");
       setOtpMessageType("success");
+
       setTimeout(() => {
         setIsOtpModalOpen(false);
         setOtpValues(["", "", "", "", "", ""]);
@@ -241,14 +239,10 @@ const LoginPage = () => {
 
   return (
     <div className="login-page ds-page-shell">
-      <div
-        className="login-bg-shape login-bg-shape-one"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="login-bg-shape login-bg-shape-two"
-        aria-hidden="true"
-      ></div>
+      <div className="login-bg-shape login-bg-shape-one" aria-hidden="true" />
+      <div className="login-bg-shape login-bg-shape-two" aria-hidden="true" />
+      <div className="login-bg-shape login-bg-shape-three" aria-hidden="true" />
+
       <div className="login-container ds-card">
         <div className="login-header">
           <div className="login-brand-icon" aria-hidden="true">
@@ -272,13 +266,13 @@ const LoginPage = () => {
               />
             </svg>
           </div>
-          <h1>Company Umbrella</h1>
-          <p>Sign in to continue</p>
+          <h1>Welcome back</h1>
+          <p>Sign in to Company Umbrella and continue your workflow.</p>
         </div>
 
         <form className="login-form" onSubmit={handleAuthSubmit}>
           <div className="login-form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Work Email</label>
             <div className="login-input-wrap">
               <span className="login-input-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -339,47 +333,23 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className="login-form-group">
-            <label htmlFor="captcha">Captcha</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                aria-hidden="true"
-                style={{
-                  border: "1px solid var(--ds-border)",
-                  borderRadius: "var(--ds-input-radius)",
-                  display: "grid",
-                  placeItems: "center",
-                  fontWeight: 700,
-                  letterSpacing: "1.2px",
-                  color: "#1e3a8a",
-                  background: "#f8fbff",
-                  userSelect: "none",
-                  minHeight: "46px",
-                  minWidth: "120px",
-                  padding: "0 12px",
-                }}
-              >
+          <div className="login-form-group captcha-group">
+            <label htmlFor="captcha">Captcha Verification</label>
+
+            <div className="captcha-panel">
+              <div className="captcha-display" aria-hidden="true">
                 {generatedCaptcha}
               </div>
               <button
                 type="button"
                 onClick={refreshCaptcha}
                 aria-label="Refresh captcha"
-                style={{
-                  border: "1px solid var(--ds-border)",
-                  borderRadius: "var(--ds-input-radius)",
-                  background: "#ffffff",
-                  minHeight: "46px",
-                  minWidth: "46px",
-                  cursor: "pointer",
-                }}
+                className="captcha-refresh-btn"
               >
                 Refresh
               </button>
             </div>
-            <label htmlFor="captcha" style={{ marginTop: "10px" }}>
-              Enter Captcha
-            </label>
+
             <div className="login-input-wrap">
               <input
                 id="captcha"
@@ -387,8 +357,8 @@ const LoginPage = () => {
                 value={captchaInput}
                 onChange={(e) => setCaptchaInput(e.target.value)}
                 required
-                placeholder="Enter captcha"
-                style={{ padding: "12px 14px" }}
+                placeholder="Enter captcha text"
+                className="captcha-input"
               />
             </div>
           </div>
@@ -400,34 +370,33 @@ const LoginPage = () => {
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <span>Remember Me</span>
+              <span>Remember me</span>
             </label>
             <a
               href="#"
               className="forgot-password"
               onClick={(e) => e.preventDefault()}
             >
-              Forgot Password?
+              Forgot password?
             </a>
           </div>
 
-          <button
-            className="login-submit-button ds-btn-primary"
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Sending..." : "Send OTP"}
+          <button className="login-submit-button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span className="btn-loading-state">
+                <span className="btn-spinner" aria-hidden="true" />
+                Sending OTP...
+              </span>
+            ) : (
+              "Send OTP"
+            )}
           </button>
+
           {authMessage && (
-            <p
-              className="signup-helper"
-              style={{
-                color: authMessageType === "error" ? "#b91c1c" : "#166534",
-                marginTop: "2px",
-              }}
-            >
-              {authMessage}
-            </p>
+            <div className={`auth-alert ${authMessageType}`} role="status" aria-live="polite">
+              <span className="auth-alert-dot" aria-hidden="true" />
+              <span>{authMessage}</span>
+            </div>
           )}
         </form>
       </div>
@@ -440,7 +409,7 @@ const LoginPage = () => {
           aria-labelledby="otp-title"
         >
           <div className="otp-modal">
-            <h3 id="otp-title">Verify Your Email</h3>
+            <h3 id="otp-title">Verify your email</h3>
             <p>Enter the OTP sent to your email</p>
 
             <div className="otp-input-grid">
@@ -461,9 +430,7 @@ const LoginPage = () => {
             </div>
 
             {otpMessage && (
-              <div className={`otp-message ${otpMessageType}`}>
-                {otpMessage}
-              </div>
+              <div className={`otp-message ${otpMessageType}`}>{otpMessage}</div>
             )}
 
             <div className="otp-actions">
@@ -496,5 +463,5 @@ const LoginPage = () => {
     </div>
   );
 };
-console.log("CI/CD test working 🚀");
+
 export default LoginPage;
