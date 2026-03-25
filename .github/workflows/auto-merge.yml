@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4   # ✅ IMPORTANT
+        uses: actions/checkout@v4
 
       - name: Enable Auto Merge
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}   # ✅ FIXED
           merge-method: squash
