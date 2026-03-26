@@ -34,6 +34,7 @@ const CATEGORIES: DocumentCategory[] = [
     { id: 'document-expiry-report', title: 'Document Expiry Report', description: 'Monitor expiring/expired documents.', type: 'report' },
     { id: 'audit-report', title: 'Audit Report', description: 'Review audit history and findings.', type: 'report' },
     { id: 'user-activity-report', title: 'User Activity Report', description: 'Track user actions and system logs.', type: 'report' },
+    { id: 'roc-ministry-corporate-affairs-report', title: 'ROC Ministry of Corporate Affairs Report', description: 'Upload ROC and MCA filing/compliance report documents.', type: 'report' },
 
     // Compliance (13 categories as per request)
     {
