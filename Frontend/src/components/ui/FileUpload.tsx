@@ -49,6 +49,13 @@ export default function FileUpload({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const acceptsPdf = accept.toLowerCase().includes('pdf');
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (acceptsPdf && !isPdf) {
+      setUploadError('Only PDF files are allowed');
+      return;
+    }
+
     // Validate file size
     if (file.size > maxSize * 1024 * 1024) {
       setUploadError(`File too large. Maximum size is ${maxSize}MB`);
@@ -61,7 +68,7 @@ export default function FileUpload({
 
     try {
       if (onFileSelect) {
-        onFileSelect(file);
+        await Promise.resolve(onFileSelect(file));
         setUploadSuccess(true);
         setTimeout(() => setUploadSuccess(false), 3000);
       } else {
@@ -79,7 +86,7 @@ export default function FileUpload({
         fileInputRef.current.value = '';
       }
     }
-  }, [folder, maxSize, onChange]);
+  }, [accept, folder, maxSize, onChange, onFileSelect]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();

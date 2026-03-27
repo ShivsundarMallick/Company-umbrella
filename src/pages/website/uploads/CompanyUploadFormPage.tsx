@@ -21,6 +21,12 @@ interface DocumentCategory {
     type: 'compliance' | 'report';
 }
 
+interface DocumentTimingMeta {
+    registeredAt: string;
+    expiryDate: string;
+    daysRemaining: number;
+}
+
 const CATEGORIES: DocumentCategory[] = [
     // Reports (10 categories as per request)
     { id: 'tds-report', title: 'TDS Report', description: 'Track TDS deductions, filings, and status.', type: 'report' },
@@ -34,7 +40,7 @@ const CATEGORIES: DocumentCategory[] = [
     { id: 'document-expiry-report', title: 'Document Expiry Report', description: 'Monitor expiring/expired documents.', type: 'report' },
     { id: 'audit-report', title: 'Audit Report', description: 'Review audit history and findings.', type: 'report' },
     { id: 'user-activity-report', title: 'User Activity Report', description: 'Track user actions and system logs.', type: 'report' },
-    { id: 'roc-ministry-corporate-affairs-report', title: 'ROC Ministry of Corporate Affairs Report', description: 'Upload ROC and MCA filing/compliance report documents.', type: 'report' },
+    { id: 'roc-report', title: 'ROC MCA Report', description: 'Upload ROC and MCA filing/compliance report documents.', type: 'report' },
 
     // Compliance (13 categories as per request)
     {
@@ -146,13 +152,37 @@ export default function CompanyUploadFormPage() {
     const [company, setCompany] = useState<any>(null);
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['director-kyc']));
     const [uploadedDocs, setUploadedDocs] = useState<Record<string, string>>({});
+    const [documentMeta, setDocumentMeta] = useState<Record<string, DocumentTimingMeta>>({});
+    const [uploadingByCategory, setUploadingByCategory] = useState<Record<string, boolean>>({});
+    const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
+
+    const getDaysLeftClass = (days: number) => {
+        if (days < 15) return 'bg-red-100 text-red-700 border-red-200';
+        if (days < 30) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return 'bg-green-100 text-green-700 border-green-200';
+    };
+
+    const formatDateTime = (value?: string) => {
+        if (!value) return 'N/A';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'N/A';
+        return date.toLocaleString('en-IN');
+    };
 
     useEffect(() => {
+        console.log('[UploadDebug] Upload page mounted with route param companyId:', companyId);
         fetchCompanyDetails();
     }, [companyId]);
 
     const fetchCompanyDetails = async () => {
         try {
+            if (!companyId) {
+                console.error('[UploadDebug] Missing companyId in route params');
+                toast.error('Invalid company route. Missing company ID.');
+                navigate('/website/uploads');
+                return;
+            }
+
             const response = await companiesService.getById(companyId!);
             const c = response.data as any;
             
@@ -166,6 +196,13 @@ export default function CompanyUploadFormPage() {
                 role: c.tier
             };
 
+            console.log('[UploadDebug] Company fetched for upload page:', {
+                routeCompanyId: companyId,
+                fetchedCompanyId: mapped._id,
+                name: mapped.name,
+                email: mapped.email,
+                role: mapped.role
+            });
             setCompany(mapped);
         } catch (error) {
             console.error('Failed to fetch company details:', error);
@@ -190,6 +227,29 @@ export default function CompanyUploadFormPage() {
             return;
         }
 
+        console.log('[UploadDebug] Preparing upload request:', {
+            routeCompanyId: companyId,
+            selectedCategoryId: cat.id,
+            selectedCategoryTitle: cat.title,
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size
+        });
+
+        const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdf) {
+            setUploadErrors(prev => ({ ...prev, [cat.id]: 'Only PDF files are allowed.' }));
+            toast.error('Only PDF files are allowed');
+            return;
+        }
+
+        const maxBytes = 10 * 1024 * 1024;
+        if (file.size > maxBytes) {
+            setUploadErrors(prev => ({ ...prev, [cat.id]: 'File too large. Maximum size is 10MB.' }));
+            toast.error('File too large. Maximum size is 10MB.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('categoryId', cat.id);
@@ -197,23 +257,48 @@ export default function CompanyUploadFormPage() {
         formData.append('formName', cat.formName || '');
         formData.append('docType', cat.type);
 
-        const uploadPromise = fetch(`${API_BASE_URL}/documents/${companyId}/upload`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
+        try {
+            setUploadingByCategory(prev => ({ ...prev, [cat.id]: true }));
+            setUploadErrors(prev => ({ ...prev, [cat.id]: '' }));
 
-        toast.promise(uploadPromise, {
-            loading: `Uploading ${cat.title}...`,
-            success: (response) => {
-                if (!response.ok) throw new Error('Upload failed');
-                setUploadedDocs(prev => ({ ...prev, [cat.id]: 'uploaded' }));
-                return `${cat.title} uploaded successfully`;
-            },
-            error: (err) => `Failed to upload ${cat.title}: ${err.message}`
-        });
+            const response = await fetch(`${API_BASE_URL}/documents/${companyId}/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                console.error('[UploadDebug] Upload API non-200 response:', {
+                    status: response.status,
+                    payload
+                });
+                throw new Error(payload?.message || 'Upload failed');
+            }
+
+            const registration = payload?.registration || {};
+            const document = payload?.document || {};
+
+            setUploadedDocs(prev => ({ ...prev, [cat.id]: document.filePath || 'uploaded' }));
+            setDocumentMeta(prev => ({
+                ...prev,
+                [cat.id]: {
+                    registeredAt: registration.registeredAt || new Date().toISOString(),
+                    expiryDate: registration.expiryDate || '',
+                    daysRemaining: Number(registration.daysRemaining ?? 0)
+                }
+            }));
+
+            toast.success(`${cat.title} uploaded successfully`);
+        } catch (error: any) {
+            const message = error?.message || `Failed to upload ${cat.title}`;
+            setUploadErrors(prev => ({ ...prev, [cat.id]: message }));
+            toast.error(message);
+        } finally {
+            setUploadingByCategory(prev => ({ ...prev, [cat.id]: false }));
+        }
     };
 
     const handleSaveAll = () => {
@@ -316,11 +401,23 @@ export default function CompanyUploadFormPage() {
                                                 <FileUpload
                                                     label="Upload Signed Document (PDF only)"
                                                     accept=".pdf"
+                                                    maxSize={10}
                                                     value={uploadedDocs[cat.id]}
                                                     onFileSelect={(file) => handleUpload(cat, file)}
                                                     onChange={(url) => setUploadedDocs(prev => ({ ...prev, [cat.id]: url }))}
-                                                    hint="Only PDF files are allowed for compliance documents."
+                                                    hint="Only PDF files are allowed (max 10MB)."
+                                                    error={uploadErrors[cat.id]}
+                                                    disabled={Boolean(uploadingByCategory[cat.id])}
                                                 />
+                                                {documentMeta[cat.id] && (
+                                                    <div className="mt-3 rounded-lg border border-border bg-white p-3 text-xs space-y-2">
+                                                        <div><span className="font-semibold">Document Register Date:</span> {formatDateTime(documentMeta[cat.id].registeredAt)}</div>
+                                                        <div><span className="font-semibold">Expiry Date:</span> {formatDateTime(documentMeta[cat.id].expiryDate)}</div>
+                                                        <div className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 font-semibold ${getDaysLeftClass(documentMeta[cat.id].daysRemaining)}`}>
+                                                            Days Left: {documentMeta[cat.id].daysRemaining}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </CardContent>
@@ -352,12 +449,25 @@ export default function CompanyUploadFormPage() {
 
                                     <FileUpload
                                         accept=".pdf"
+                                        maxSize={10}
                                         value={uploadedDocs[cat.id]}
                                         onFileSelect={(file) => handleUpload(cat, file)}
                                         onChange={(url) => setUploadedDocs(prev => ({ ...prev, [cat.id]: url }))}
-                                        hint="PDF only"
+                                        hint="PDF only (max 10MB)"
+                                        error={uploadErrors[cat.id]}
+                                        disabled={Boolean(uploadingByCategory[cat.id])}
                                         showPreview={false}
                                     />
+
+                                    {documentMeta[cat.id] && (
+                                        <div className="rounded-lg border border-border bg-muted/20 p-3 text-xs space-y-2">
+                                            <div><span className="font-semibold">Document Register Date:</span> {formatDateTime(documentMeta[cat.id].registeredAt)}</div>
+                                            <div><span className="font-semibold">Expiry Date:</span> {formatDateTime(documentMeta[cat.id].expiryDate)}</div>
+                                            <div className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 font-semibold ${getDaysLeftClass(documentMeta[cat.id].daysRemaining)}`}>
+                                                Days Left: {documentMeta[cat.id].daysRemaining}
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {uploadedDocs[cat.id] && (
                                         <div className="flex items-center gap-2 text-xs text-green-600 font-medium">

@@ -3,6 +3,7 @@ import { Search, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Badge, Input } from '../../../components/ui';
 import { companiesService } from '../../../services';
+import toast from 'react-hot-toast';
 
 const TIER_CONFIG = [
     { id: 'Tier 1', label: 'Tier 1', description: 'Enterprise Companies', color: 'default' },
@@ -25,13 +26,21 @@ export default function UploadsLandingPage() {
             const apiCompanies = Array.isArray(response.data) ? response.data : [];
             
             // Map Company model to flat structure for the UI
-            const mapped = apiCompanies.map((c: any) => ({
-                _id: c._id,
+            const mapped = apiCompanies.map((c: any, index: number) => ({
+                _id: c._id || c.id || null,
+                originalId: c._id || c.id || null,
                 name: c.companyData?.companyName || 'Unknown',
                 email: c.companyData?.officialCompanyEmail || 'No email',
-                role: c.tier
+                role: c.tier,
+                debugIndex: index
             }));
 
+            console.log('[UploadDebug] Companies loaded for upload:', mapped.map((c) => ({
+                index: c.debugIndex,
+                id: c._id,
+                name: c.name,
+                role: c.role
+            })));
             setCompanies(mapped);
         } catch (error) {
             console.error('Failed to fetch companies:', error);
@@ -114,7 +123,23 @@ export default function UploadsLandingPage() {
                                         <Card
                                             key={company._id || company.id}
                                             className="group hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
-                                            onClick={() => navigate(`/website/uploads/${company._id || company.id}`)}
+                                            onClick={() => {
+                                                const selectedCompanyId = company._id || company.id;
+                                                console.log('[UploadDebug] Company card clicked:', {
+                                                    selectedCompanyId,
+                                                    companyName: company.name,
+                                                    tier: company.role,
+                                                    index: company.debugIndex
+                                                });
+
+                                                if (!selectedCompanyId) {
+                                                    toast.error('This company has missing ID. Please fix company data.');
+                                                    console.error('[UploadDebug] Missing company ID for selected card:', company);
+                                                    return;
+                                                }
+
+                                                navigate(`/website/uploads/${selectedCompanyId}`);
+                                            }}
                                         >
                                             <CardContent className="p-4">
                                                 <div className="flex items-start justify-between">

@@ -1,11 +1,17 @@
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
 const { Company, Document } = require("../models");
 
-function getExpiryDateFromUpload(uploadedAt) {
-  const expiryDate = new Date(uploadedAt);
+function getExpiryDateFromRegistration(registeredAt) {
+  const expiryDate = new Date(registeredAt);
   expiryDate.setFullYear(expiryDate.getFullYear() + 1);
   return expiryDate;
+}
+
+function getDaysRemaining(expiryDate) {
+  const diffMs = new Date(expiryDate).getTime() - Date.now();
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
 
 function toUploadsUrl(fileName) {
@@ -36,8 +42,26 @@ exports.uploadDocument = async (req, res) => {
     const companyId = req.params.companyId || req.body.companyId;
     const { categoryId, title, formName, docType } = req.body;
 
+    console.log("[UploadDebug] Incoming upload request:", {
+      params: req.params,
+      body: req.body,
+      hasFile: Boolean(req.file),
+      fileMeta: req.file
+        ? {
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size
+          }
+        : null
+    });
+
     if (!companyId) {
       return res.status(400).json({ message: "companyId is required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+      console.error("[UploadDebug] Invalid companyId format:", companyId);
+      return res.status(400).json({ message: "Invalid companyId format" });
     }
 
     if (!categoryId || !title || !docType) {
@@ -48,13 +72,22 @@ exports.uploadDocument = async (req, res) => {
       return res.status(400).json({ message: "File is required" });
     }
 
-    const company = await Company.findById(companyId).select("_id").lean();
+    const company = await Company.findById(companyId).lean();
     if (!company) {
+      console.error("[UploadDebug] Company not found for companyId:", companyId);
       return res.status(404).json({ message: "Company not found" });
     }
 
-    const uploadedAt = new Date();
-    const expiryDate = getExpiryDateFromUpload(uploadedAt);
+    console.log("[UploadDebug] Company lookup success:", {
+      companyId: String(company._id),
+      tier: company.tier,
+      companyName: company?.companyData?.companyName || null,
+      email: company?.companyData?.officialCompanyEmail || null
+    });
+
+    const registeredAt = new Date();
+    const uploadedAt = registeredAt;
+    const expiryDate = getExpiryDateFromRegistration(registeredAt);
     const filePath = toUploadsUrl(req.file.filename);
 
     const filter = { companyId, categoryId };
@@ -68,6 +101,7 @@ exports.uploadDocument = async (req, res) => {
       title,
       formName,
       docType,
+      registeredAt,
       uploadedAt,
       expiryDate,
       originalName: req.file.originalname,
@@ -94,13 +128,27 @@ exports.uploadDocument = async (req, res) => {
       }
     );
 
+    // findOneAndUpdate does not run pre-save hooks.
+    // Ensure reportId is generated for report documents.
+    if (document?.docType === "report" && !document.reportId) {
+      await document.save();
+    }
+
     return res.status(existing ? 200 : 201).json({
       message: existing ? "Document updated successfully" : "Document uploaded successfully",
-      document
+      document,
+      registration: {
+        registeredAt: document.registeredAt || registeredAt,
+        expiryDate: document.expiryDate,
+        daysRemaining: getDaysRemaining(document.expiryDate)
+      }
     });
   } catch (error) {
-    console.error("[DocumentUpload] Error:", error);
-    return res.status(500).json({ message: "Upload failed" });
+    console.error("[DocumentUpload] Error:", {
+      message: error.message,
+      stack: error.stack
+    });
+    return res.status(500).json({ message: error.message || "Upload failed" });
   }
 };
 

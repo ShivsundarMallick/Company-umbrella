@@ -137,7 +137,7 @@ export const NAVIGATION: Record<string, NavItem[]> = {
         { name: 'Document Expiry Report', href: '/website/reports/document-expiry', icon: 'Clock', permission: PERMISSIONS.VIEW_ANALYTICS },
         { name: 'Audit Report', href: '/website/reports/audit', icon: 'FileCheck', permission: PERMISSIONS.VIEW_ANALYTICS },
         { name: 'User Activity Report', href: '/website/reports/user-activity', icon: 'Users', permission: PERMISSIONS.VIEW_ANALYTICS },
-        { name: 'ROC Ministry of Corporate Affairs Report', href: '/website/reports/roc-ministry-corporate-affairs', icon: 'FileCheck', permission: PERMISSIONS.VIEW_ANALYTICS },
+        { name: 'ROC MCA Report', href: '/website/reports/roc', icon: 'FileCheck', permission: PERMISSIONS.VIEW_ANALYTICS },
       ]
     },
   ],
