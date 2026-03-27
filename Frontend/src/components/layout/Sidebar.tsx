@@ -120,7 +120,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Children */}
           <div className={cn(
             'overflow-hidden transition-all duration-200',
-            isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+            isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
           )}>
             <div className="ml-4 pl-4 border-l-2 border-gray-100 mt-1 space-y-1">
               {filteredChildren.map(child => renderNavItem(child, true))}

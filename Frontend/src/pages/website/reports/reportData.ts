@@ -1,4 +1,5 @@
 export type ReportCategoryKey =
+  | 'roc'
   | 'tds'
   | 'company-pan-register'
   | 'company-document-register'
@@ -14,11 +15,24 @@ export type ReportCategoryKey =
 
 export interface ReportRow {
   id: string;
+  reportId?: string | null;
+  companyId?: string | null;
+  categoryId?: string;
+  title?: string;
   companyName: string;
   pan: string;
   reportDate: string;
   amount: number;
   status: 'Pending' | 'Completed' | 'Overdue' | 'In Progress';
+  uploadedAt?: string;
+  registeredAt?: string;
+  expiryDate?: string;
+  fileName?: string;
+  filePath?: string;
+  mimeType?: string;
+  size?: number;
+  tier?: string | null;
+  companyEmail?: string | null;
 }
 
 export interface ReportCategory {
@@ -96,10 +110,10 @@ export const REPORT_CATEGORIES: ReportCategory[] = [
     href: '/website/reports/user-activity',
   },
   {
-    key: 'roc-ministry-corporate-affairs',
-    title: 'ROC Ministry of Corporate Affairs Report',
+    key: 'roc',
+    title: 'ROC MCA Report',
     description: 'Track ROC filings and Ministry of Corporate Affairs compliance status.',
-    href: '/website/reports/roc-ministry-corporate-affairs',
+    href: '/website/reports/roc',
   },
 ];
 
@@ -155,6 +169,7 @@ const sharedRows: ReportRow[] = [
 ];
 
 export const REPORT_DATA: Record<ReportCategoryKey, ReportRow[]> = {
+  roc: sharedRows,
   tds: sharedRows,
   'company-pan-register': sharedRows,
   'company-document-register': sharedRows,

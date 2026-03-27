@@ -29,10 +29,30 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 20 * 1024 * 1024 }
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter(req, file, cb) {
+    const isPdfMime = file.mimetype === "application/pdf";
+    const isPdfExt = path.extname(file.originalname || "").toLowerCase() === ".pdf";
+
+    if (isPdfMime || isPdfExt) {
+      cb(null, true);
+      return;
+    }
+
+    cb(new Error("Only PDF files are allowed"));
+  }
 });
 
-router.post("/:companyId/upload", upload.single("file"), uploadDocument);
+router.post("/:companyId/upload", (req, res, next) => {
+  upload.single("file")(req, res, (error) => {
+    if (error) {
+      const message =
+        error.message || "Upload failed. Please upload a valid PDF under 10MB.";
+      return res.status(400).json({ message });
+    }
+    return uploadDocument(req, res, next);
+  });
+});
 router.get("/:companyId", getDocumentsByCompany);
 router.get("/file/:documentId", getDocumentFile);
 router.delete("/:documentId", deleteDocument);
