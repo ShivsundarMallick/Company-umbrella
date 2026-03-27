@@ -57,11 +57,7 @@ function mapCategoryToIds(categoryKey) {
     "document-expiry": ["document-expiry-report", "document-expiry"],
     audit: ["audit-report", "audit"],
     "user-activity": ["user-activity-report", "user-activity"],
-    "roc-ministry-corporate-affairs": [
-      "roc-ministry-corporate-affairs-report",
-      "roc-ministry-corporate-affairs"
-    ],
-    roc: ["roc-ministry-corporate-affairs-report", "roc-ministry-corporate-affairs", "roc"]
+    roc: ["roc-report", "roc"]
   };
 
   return mapping[categoryKey] || [categoryKey];

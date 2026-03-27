@@ -165,7 +165,6 @@ function App() {
               <Route path="reports/compliance-status" element={<ComplianceStatusReportPage />} />
               <Route path="reports/company-registration" element={<CompanyRegistrationReportPage />} />
               <Route path="reports/roc" element={<RocMinistryCorporateAffairsReportPage />} />
-              <Route path="reports/roc-ministry-corporate-affairs" element={<RocMinistryCorporateAffairsReportPage />} />
               <Route path="reports/:category/:id" element={<ReportCompanyDetailsPage />} />
 
               <Route path="reviews" element={<ReviewsListPage />} />

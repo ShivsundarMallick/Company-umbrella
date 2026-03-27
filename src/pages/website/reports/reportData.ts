@@ -10,8 +10,7 @@ export type ReportCategoryKey =
   | 'gst-filing'
   | 'document-expiry'
   | 'audit'
-  | 'user-activity'
-  | 'roc-ministry-corporate-affairs';
+  | 'user-activity';
 
 export interface ReportRow {
   id: string;
@@ -181,5 +180,4 @@ export const REPORT_DATA: Record<ReportCategoryKey, ReportRow[]> = {
   'document-expiry': sharedRows,
   audit: sharedRows,
   'user-activity': sharedRows,
-  'roc-ministry-corporate-affairs': sharedRows,
 };
