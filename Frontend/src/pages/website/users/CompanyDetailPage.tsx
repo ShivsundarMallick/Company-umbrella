@@ -183,7 +183,6 @@ const CompanyDetailPage = () => {
                             {(role === 'Tier 2') && (
                                 <>
                                     {dataField("Tax Number", details.taxNumber)}
-                                    {dataField("ITR Number", details.itrNumber)}
                                     {dataField("Registration Date", details.registrationDate)}
                                 </>
                             )}

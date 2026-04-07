@@ -8,7 +8,6 @@ import { companiesService } from '../../../services';
 import mockPanCard from '@/assets/mock-pan-card.jpg';
 import mockGstCert from '@/assets/mock-gst-certificate.jpg';
 import mockCinCert from '@/assets/mock-cin-certificate.jpg';
-import mockItrDoc from '@/assets/mock-itr-document.jpg';
 import mockTaxCert from '@/assets/mock-tax-certificate.jpg';
 import mockAuditReport from '@/assets/mock-audit-report.jpg';
 
@@ -55,8 +54,7 @@ const tier1Pages: { title: string; fields: DetailField[] }[] = [
             { label: 'CIN Number', key: 'companyCinNumber', documentImage: mockCinCert, documentLabel: 'Incorporation Certificate' },
             { label: 'GST Number', key: 'gstNumber', documentImage: mockGstCert, documentLabel: 'GST Certificate' },
             { label: 'Tax Number', key: 'taxNumber', documentImage: mockTaxCert, documentLabel: 'Tax Registration' },
-            { label: 'ITR Number', key: 'itrNumber', documentImage: mockItrDoc, documentLabel: 'ITR Acknowledgement' },
-            { label: 'Registration Date', key: 'registrationDate' },
+                        { label: 'Registration Date', key: 'registrationDate' },
         ],
     },
     {
@@ -95,8 +93,7 @@ const tier2Pages: { title: string; fields: DetailField[] }[] = [
         title: 'Registration & Tax',
         fields: [
             { label: 'Tax Number', key: 'taxNumber', documentImage: mockTaxCert, documentLabel: 'Tax Registration' },
-            { label: 'ITR Number', key: 'itrNumber', documentImage: mockItrDoc, documentLabel: 'ITR Acknowledgement' },
-            { label: 'Registration Date', key: 'registrationDate' },
+                        { label: 'Registration Date', key: 'registrationDate' },
         ],
     },
 ];

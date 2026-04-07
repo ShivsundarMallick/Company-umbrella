@@ -32,7 +32,6 @@ const CompanyRegistration = () => {
       'companyCinNumber',
       'gstNumber',
       'taxNumber',
-      'itrNumber',
       'registrationDate'
     ],
     3: [

@@ -14,7 +14,6 @@ export interface CompanyDetails {
     companyCinNumber?: string;
     gstNumber?: string;
     taxNumber?: string;
-    itrNumber?: string;
     registrationDate: string;
     expiryDate: string;
     annualRevenue?: string;
@@ -68,7 +67,6 @@ export const tier1MockCompanies: Company[] = [
             companyCinNumber: 'L12345KA2010PLC054321',
             gstNumber: '22AAAAA0000A1Z5',
             taxNumber: 'TAX-987654321',
-            itrNumber: 'ITR-2023-998877',
             registrationDate: '2010-05-20',
             expiryDate: '2030-05-20',
             annualRevenue: '1000000000',
@@ -106,7 +104,6 @@ export const tier1MockCompanies: Company[] = [
             companyCinNumber: 'U56789IL2005PTC067890',
             gstNumber: '17BBBBB1111B2Y6',
             taxNumber: 'TAX-123456789',
-            itrNumber: 'ITR-2023-112233',
             registrationDate: '2005-09-12',
             expiryDate: '2025-09-12',
             annualRevenue: '500000000',
@@ -144,7 +141,6 @@ export const tier1MockCompanies: Company[] = [
             companyCinNumber: 'L90123NY2015PLC090123',
             gstNumber: '36CCCCC2222C3X7',
             taxNumber: 'TAX-445566778',
-            itrNumber: 'ITR-2023-445566',
             registrationDate: '2015-03-30',
             expiryDate: '2035-03-30',
             annualRevenue: '750000000',
@@ -176,7 +172,6 @@ export const tier2MockCompanies: Company[] = [
             gstNumber: '29ABCDE1234F1Z5',
             annualRevenue: '150000000',
             taxNumber: 'TAX-BR202301',
-            itrNumber: 'ITR-23-45678',
             registrationDate: '2015-06-15',
             expiryDate: '2030-06-15',
         },
@@ -196,7 +191,6 @@ export const tier2MockCompanies: Company[] = [
             gstNumber: '27FGHIJ5678K1Y6',
             annualRevenue: '95000000',
             taxNumber: 'TAX-SL202209',
-            itrNumber: 'ITR-22-98765',
             registrationDate: '2018-02-20',
             expiryDate: '2028-02-20',
         },
@@ -216,7 +210,6 @@ export const tier2MockCompanies: Company[] = [
             gstNumber: '33KLMNO9012P1X7',
             annualRevenue: '210000000',
             taxNumber: 'TAX-ME202401',
-            itrNumber: 'ITR-24-11223',
             registrationDate: '2012-11-05',
             expiryDate: '2032-11-05',
         },

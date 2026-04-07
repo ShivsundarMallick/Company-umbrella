@@ -134,7 +134,7 @@ const CATEGORIES: DocumentCategory[] = [
         id: 'board-meetings',
         title: 'Board Meetings (Secretarial Compliance)',
         requirements: ['Board meeting notice', 'Agenda', 'Minutes of meeting', 'Attendance register'],
-        dueDate: 'Minimum 4 meetings per year',
+        dueDate: 'Minimum 4 meetings per year (1 per quarter)',
         type: 'compliance'
     },
     {

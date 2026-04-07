@@ -113,8 +113,6 @@ export const NAVIGATION: Record<string, NavItem[]> = {
       permission: PERMISSIONS.VIEW_USERS,
       children: [
         { name: 'All Companies', href: '/website/users', icon: 'List', permission: PERMISSIONS.VIEW_USERS },
-        { name: 'Admins', href: '/website/users/admins', icon: 'Shield', permission: PERMISSIONS.VIEW_ADMINS },
-        { name: 'Tiers', href: '/website/users/roles', icon: 'Key', permission: PERMISSIONS.VIEW_ADMINS },
       ]
     },
 
