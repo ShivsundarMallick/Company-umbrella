@@ -13,7 +13,6 @@ export const tier2MockCompanies = [
             gstNumber: '29ABCDE1234F1Z5',
             annualRevenue: '150000000',
             taxNumber: 'TAX-BR202301',
-            itrNumber: 'ITR-23-45678',
             registrationDate: '2015-06-15',
             expiryDate: '2030-06-15'
         }
@@ -32,7 +31,6 @@ export const tier2MockCompanies = [
             gstNumber: '27FGHIJ5678K1Y6',
             annualRevenue: '95000000',
             taxNumber: 'TAX-SL202209',
-            itrNumber: 'ITR-22-98765',
             registrationDate: '2018-02-20',
             expiryDate: '2028-02-20'
         }
@@ -51,7 +49,6 @@ export const tier2MockCompanies = [
             gstNumber: '33KLMNO9012P1X7',
             annualRevenue: '210000000',
             taxNumber: 'TAX-ME202401',
-            itrNumber: 'ITR-24-11223',
             registrationDate: '2012-11-05',
             expiryDate: '2032-11-05'
         }

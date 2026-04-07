@@ -58,7 +58,9 @@ const UnifiedCompanyForm = ({ formData, onFormChange, activeSection = 1, tier = 
                 'SPC - Section 8 Company',
                 'FPC - Farmer Company',
                 'Trust',
-                'Partnership'
+                'Partnership',
+                'Pvt Ltd',
+                'Ltd'
               ])}
               {inputField('parentCompanyName', 'Parent Company Name', 'text', 'Enter parent company name')}
             </div>
@@ -67,7 +69,7 @@ const UnifiedCompanyForm = ({ formData, onFormChange, activeSection = 1, tier = 
               {inputField('numberOfBranches', 'Number of Branches', 'number', 'Enter number of branches')}
             </div>
             <div className="form-row">
-              {inputField('headOfficeLocation', 'Head Office Location', 'text', 'Enter head office location')}
+              {inputField('headOfficeLocation', 'Register office loaction', 'text', 'Enter register office loaction')}
               {inputField('officialCompanyEmail', 'Official Company Email', 'email', 'Enter official company email')}
             </div>
             <div className="form-row">
@@ -93,8 +95,8 @@ const UnifiedCompanyForm = ({ formData, onFormChange, activeSection = 1, tier = 
               {inputField('taxNumber', 'Tax Number', 'text', 'Enter tax number')}
             </div>
             <div className="form-row">
-              {inputField('itrNumber', 'ITR Number', 'text', 'Enter ITR number')}
               {inputField('registrationDate', 'Company Registration Date', 'date')}
+              <div className="form-group"></div>
             </div>
           </div>
         </div>

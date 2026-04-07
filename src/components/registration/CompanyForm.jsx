@@ -6,7 +6,6 @@ const CompanyForm = ({ tier, onFormSubmit }) => {
     companyName: '',
     numberOfEmployees: '',
     taxNumber: '',
-    itrNumber: '',
     registrationDate: '',
     expiryDate: ''
   });
@@ -102,26 +101,7 @@ const CompanyForm = ({ tier, onFormSubmit }) => {
               />
             </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="itrNumber">ITR Number</label>
-            <div className="form-input-wrap">
-              <span className="form-input-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <rect x="4.5" y="3.5" width="15" height="17" rx="2" stroke="currentColor" strokeWidth="1.7" />
-                  <path d="M8 8H15M8 12H15M8 16H12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                </svg>
-              </span>
-              <input
-                id="itrNumber"
-                type="text"
-                name="itrNumber"
-                value={formData.itrNumber}
-                onChange={handleChange}
-                required
-                placeholder="Enter ITR number"
-              />
-            </div>
-          </div>
+          <div className="form-group"></div>
         </div>
         <div className="form-row">
           <div className="form-group">
